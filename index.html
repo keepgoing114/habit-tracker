@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="습관 트래커">
+<meta name="theme-color" content="#b8e4f0">
+<title>습관 트래커</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --b1: #e8f7fc;
+    --b2: #d0eef8;
+    --b3: #b8e4f0;
+    --b4: #8dd4e8;
+    --b5: #5bbfdb;
+    --b6: #3aaac8;
+    --b7: #2490b0;
+    --b8: #186f88;
+    --mint1: #e6f9f5;
+    --mint2: #c2eee5;
+    --mint3: #8fddd0;
+    --mint4: #5ccabb;
+    --accent: #ff9eb5;
+    --red: #ff7a9a;
+    --blue: #7ab8ff;
+    --text: #2a4a5a;
+    --muted: #7aaabb;
+    --white: #ffffff;
+    --bg: #f0fafd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+  .header {
+    background: linear-gradient(160deg, #5bbfdb 0%, #8dd4e8 50%, #b8e4f0 100%);
+    padding: 52px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; top: -50px; right: -30px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute; bottom: -30px; left: -20px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(255,158,181,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 20px; position: relative; z-index: 1;
+  }
+  .month-nav { display: flex; align-items: center; gap: 12px; }
+  .nav-btn {
+    background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.4);
+    color: var(--white); width: 32px; height: 32px; border-radius: 10px;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:active { background: rgba(255,255,255,0.45); }
+  .month-title { color: var(--white); font-size: 22px; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .month-sub { color: rgba(255,255,255,0.8); font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 2px; }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.4);
+    color: var(--white); width: 36px; height: 36px; border-radius: 10px;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; position: relative; z-index: 1; }
+  .stat-card {
+    background: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 14px; padding: 12px 10px; text-align: center; backdrop-filter: blur(10px);
+  }
+  .stat-label { color: rgba(255,255,255,0.85); font-size: 10px; margin-bottom: 4px; }
+  .stat-value { color: var(--white); font-size: 22px; font-weight: 900; font-family: 'DM Mono', monospace; line-height: 1; }
+  .stat-value.highlight { color: #fff0f5; }
+  .tabs {
+    display: flex; margin: 14px 14px 0;
+    background: var(--white); border-radius: 14px; padding: 4px;
+    box-shadow: 0 2px 16px rgba(91,191,219,0.15);
+  }
+  .tab {
+    flex: 1; border: none; background: transparent; padding: 10px 0; border-radius: 11px;
+    font-size: 13px; font-weight: 500; font-family: 'Noto Sans KR', sans-serif;
+    color: var(--muted); cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, var(--b5), var(--mint4));
+    color: var(--white); font-weight: 700;
+    box-shadow: 0 2px 10px rgba(91,191,219,0.35);
+  }
+  .grid-wrap { overflow-x: auto; padding: 14px 0 0; -webkit-overflow-scrolling: touch; }
+  .grid-inner { padding: 0 14px 20px; min-width: max-content; }
+  .day-header-row {
+    display: flex; margin-bottom: 4px;
+    position: sticky; top: 0; z-index: 10; background: var(--bg);
+  }
+  .habit-col-head { width: 136px; flex-shrink: 0; padding: 4px 8px; font-size: 10px; font-weight: 700; color: var(--muted); }
+  .day-cell-head {
+    width: 30px; flex-shrink: 0; text-align: center; font-size: 9px; font-weight: 600;
+    padding: 3px 0 2px; border-radius: 7px; line-height: 1.4; color: var(--muted);
+  }
+  .day-cell-head.sun { color: var(--red); background: rgba(255,122,154,0.08); }
+  .day-cell-head.sat { color: var(--blue); background: rgba(122,184,255,0.08); }
+  .day-cell-head.today { background: var(--b5); color: var(--white); }
+  .total-col-head { width: 38px; flex-shrink: 0; text-align: center; font-size: 10px; font-weight: 700; color: var(--b6); padding: 4px 0; }
+  .habit-row { display: flex; align-items: center; margin-bottom: 3px; border-radius: 12px; overflow: hidden; }
+  .habit-row:nth-child(odd) { background: var(--b1); }
+  .habit-row:nth-child(even) { background: var(--white); }
+  .habit-name { width: 136px; flex-shrink: 0; padding: 8px; font-size: 11px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; }
+  .habit-emoji { font-size: 13px; flex-shrink: 0; }
+  .habit-text { overflow: hidden; text-overflow: ellipsis; }
+  .check-cell {
+    width: 30px; height: 32px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px; border-radius: 6px;
+    transition: background 0.12s, transform 0.1s;
+    user-select: none; -webkit-user-select: none; color: var(--b6);
+  }
+  .check-cell.checked { background: var(--b3); color: var(--b8); font-weight: 700; }
+  .check-cell:active { transform: scale(0.85); }
+  .total-cell { width: 38px; flex-shrink: 0; text-align: center; font-size: 12px; font-weight: 700; color: var(--b7); background: var(--b2); align-self: stretch; display: flex; align-items: center; justify-content: center; }
+  .summary-row { display: flex; margin-top: 4px; border-radius: 12px; overflow: hidden; }
+  .summary-label { width: 136px; flex-shrink: 0; padding: 7px 8px; font-size: 10px; font-weight: 700; }
+  .summary-cell { width: 30px; flex-shrink: 0; text-align: center; font-size: 10px; font-weight: 600; padding: 7px 0; }
+  .summary-total { width: 38px; flex-shrink: 0; text-align: center; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .done-row { background: var(--b2); }
+  .done-row .summary-label { color: var(--b7); }
+  .done-row .summary-cell { color: var(--b6); }
+  .done-row .summary-total { color: var(--b8); background: var(--b3); }
+  .progress-row { background: var(--b5); margin-top: 2px; }
+  .progress-row .summary-label { color: var(--white); }
+  .progress-row .summary-cell { color: rgba(255,255,255,0.85); font-size: 9px; }
+  .progress-row .summary-total { color: var(--white); background: var(--b7); font-size: 12px; }
+  .stats-wrap { padding: 14px 14px 80px; }
+  .card { background: var(--white); border-radius: 20px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 16px rgba(91,191,219,0.12); }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+  .ring-wrap { display: flex; align-items: center; gap: 18px; }
+  .ring-info { flex: 1; }
+  .ring-info-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--b1); font-size: 12px; }
+  .ring-info-row:last-child { border-bottom: none; }
+  .ring-info-label { color: var(--muted); }
+  .ring-info-val { font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
+  .chart-area { width: 100%; height: 80px; }
+  .chart-area svg { width: 100%; height: 100%; }
+  .chart-x { display: flex; justify-content: space-between; margin-top: 4px; font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .habit-bar-row { margin-bottom: 11px; }
+  .habit-bar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .habit-bar-label { font-size: 11px; color: var(--text); display: flex; align-items: center; gap: 5px; }
+  .habit-bar-val { font-size: 11px; font-weight: 700; color: var(--b6); font-family: 'DM Mono', monospace; }
+  .bar-track { background: var(--b1); border-radius: 6px; height: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
+  .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; display: none; backdrop-filter: blur(4px); }
+  .menu-overlay.open { display: block; }
+  .menu-sheet {
+    position: fixed; bottom: 0; left: 50%;
+    width: 100%; max-width: 430px;
+    background: var(--white); border-radius: 24px 24px 0 0;
+    padding: 8px 20px 40px; z-index: 101;
+    transform: translateX(-50%) translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  .menu-sheet.open { transform: translateX(-50%) translateY(0); }
+  .menu-handle { width: 40px; height: 4px; background: var(--b2); border-radius: 2px; margin: 10px auto 20px; }
+  .menu-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  .menu-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--b1); cursor: pointer; font-size: 14px; color: var(--text); font-weight: 500; }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; background: var(--b1); }
+  .menu-item-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200; display: none; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; align-items: flex-end; justify-content: center; }
+  .modal { width: 100%; max-width: 430px; background: var(--white); border-radius: 24px 24px 0 0; padding: 8px 20px 40px; max-height: 85vh; overflow-y: auto; }
+  .modal-handle { width: 40px; height: 4px; background: var(--b2); border-radius: 2px; margin: 10px auto 16px; }
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  .habit-edit-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--b1); }
+  .habit-edit-emoji { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; cursor: pointer; }
+  .habit-edit-input { flex: 1; border: 1px solid var(--b2); border-radius: 10px; padding: 8px 10px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: var(--text); outline: none; }
+  .habit-edit-input:focus { border-color: var(--b5); }
+  .del-btn { background: rgba(255,122,154,0.1); border: none; color: var(--red); width: 30px; height: 30px; border-radius: 8px; font-size: 14px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .add-habit-btn { width: 100%; margin-top: 14px; padding: 12px; background: var(--b1); border: 2px dashed var(--b3); border-radius: 12px; color: var(--b6); font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .btn-cancel { flex: 1; padding: 13px; background: var(--b1); border: none; border-radius: 12px; color: var(--muted); font-size: 14px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
+  .btn-save { flex: 2; padding: 13px; background: linear-gradient(135deg, var(--b5), var(--mint4)); border: none; border-radius: 12px; color: var(--white); font-size: 14px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
+  .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: rgba(255,255,255,0.95); border-top: 1px solid var(--b2); padding: 10px 0 14px; text-align: center; font-size: 10px; color: var(--muted); backdrop-filter: blur(10px); z-index: 50; }
+  .toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--b7); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 300; white-space: nowrap; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .grid-wrap::-webkit-scrollbar { display: none; }
+  .grid-wrap { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="month-nav">
+      <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+      <div>
+        <div class="month-title" id="monthTitle"></div>
+        <div class="month-sub" id="monthSub"></div>
+      </div>
+      <button class="nav-btn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openMenu()">⋯</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">습관 수</div><div class="stat-value" id="statHabits">0</div></div>
+    <div class="stat-card"><div class="stat-label">달성 수</div><div class="stat-value" id="statDone">0</div></div>
+    <div class="stat-card"><div class="stat-label">달성률</div><div class="stat-value highlight" id="statPct">0%</div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('grid',this)">📋 체크표</button>
+  <button class="tab" onclick="switchTab('stats',this)">📊 통계</button>
+</div>
+
+<div id="tab-grid" class="tab-content active">
+  <div class="grid-wrap"><div class="grid-inner" id="gridInner"></div></div>
+</div>
+
+<div id="tab-stats" class="tab-content">
+  <div class="stats-wrap">
+    <div class="card">
+      <div class="card-title">🎯 이번 달 현황</div>
+      <div class="ring-wrap">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#e8f7fc" stroke-width="10"/>
+          <circle id="ringCircle" cx="50" cy="50" r="38" fill="none" stroke="#5bbfdb" stroke-width="10"
+            stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round"
+            transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.8s ease"/>
+          <text id="ringPct" x="50" y="46" text-anchor="middle" font-size="18" font-weight="900" fill="#2490b0" font-family="DM Mono,monospace">0%</text>
+          <text x="50" y="60" text-anchor="middle" font-size="8" fill="#7aaabb">달성률</text>
+        </svg>
+        <div class="ring-info" id="ringInfo"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 일별 달성률 추이</div>
+      <div class="chart-area">
+        <svg id="sparkSvg" viewBox="0 0 300 70" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5bbfdb" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#5bbfdb" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="52.5" x2="300" y2="52.5" stroke="#e8f7fc" stroke-width="1"/>
+          <line x1="0" y1="35" x2="300" y2="35" stroke="#e8f7fc" stroke-width="1"/>
+          <line x1="0" y1="17.5" x2="300" y2="17.5" stroke="#e8f7fc" stroke-width="1"/>
+          <polygon id="sparkFill" fill="url(#grad)"/>
+          <polyline id="sparkLine" fill="none" stroke="#5bbfdb" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="chart-x" id="chartX"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🌊 습관별 달성 현황</div>
+      <div id="habitBars"></div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">탭해서 습관을 기록하세요 🩵</div>
+<div class="toast" id="toast"></div>
+
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="menu-sheet" id="menuSheet">
+  <div class="menu-handle"></div>
+  <div class="menu-title">메뉴</div>
+  <div class="menu-item" onclick="openHabitEdit()"><div class="menu-icon">✏️</div><div><div>습관 수정</div><div class="menu-item-sub">습관 추가·삭제·이름 변경</div></div></div>
+  <div class="menu-item" onclick="exportJSON();closeMenu()"><div class="menu-icon">📥</div><div><div>JSON 백업</div><div class="menu-item-sub">기기 이전·복원용 백업 파일</div></div></div>
+  <div class="menu-item" onclick="exportCSV();closeMenu()"><div class="menu-icon">📊</div><div><div>CSV 내보내기</div><div class="menu-item-sub">구글시트·엑셀에서 분석</div></div></div>
+  <div class="menu-item" onclick="document.getElementById('importFile').click();closeMenu()"><div class="menu-icon">📤</div><div><div>JSON 불러오기</div><div class="menu-item-sub">백업 파일로 데이터 복원</div></div></div>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">습관 수정</div>
+    <div id="habitEditList"></div>
+    <button class="add-habit-btn" onclick="addHabitEditItem()">+ 습관 추가</button>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeHabitEdit()">취소</button>
+      <button class="btn-save" onclick="saveHabits()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_HABITS=[
+  {emoji:"🌅",label:"아침에 05:00 일어나기"},
+  {emoji:"🏃",label:"30분 이상 운동"},
+  {emoji:"📵",label:"취침 30분 전 스마트폰 멀리하기"},
+  {emoji:"📚",label:"10분이상 책읽기"},
+  {emoji:"🥗",label:"배달 음식 끊이기"},
+  {emoji:"💄",label:"립스 만들기"},
+  {emoji:"☕",label:"커피는 하루에 한잔만"},
+  {emoji:"💊",label:"영양제 챙겨 먹기"},
+  {emoji:"💧",label:"공복에 물 한 잔 마시기"},
+  {emoji:"📰",label:"경제 뉴스레터 1개 읽기"},
+];
+let state={year:new Date().getFullYear(),month:new Date().getMonth()+1,habits:[],checks:{}};
+function loadState(){try{const r=localStorage.getItem('habit_tracker_v1');if(r){const s=JSON.parse(r);state.habits=s.habits||DEFAULT_HABITS;state.checks=s.checks||{};}else{state.habits=JSON.parse(JSON.stringify(DEFAULT_HABITS));}}catch(e){state.habits=JSON.parse(JSON.stringify(DEFAULT_HABITS));}}
+function saveState(){localStorage.setItem('habit_tracker_v1',JSON.stringify({habits:state.habits,checks:state.checks}));}
+function dim(y,m){return new Date(y,m,0).getDate();}
+function dow(y,m,d){return new Date(y,m-1,d).getDay();}
+const DOW=["일","월","화","수","목","금","토"];
+const MO=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+function ck(y,m,d,h){return`${y}-${m}-${d}-${h}`;}
+function isC(y,m,d,h){return!!state.checks[ck(y,m,d,h)];}
+function toggle(y,m,d,h){state.checks[ck(y,m,d,h)]=!state.checks[ck(y,m,d,h)];saveState();render();}
+function renderHeader(){
+  const{year,month}=state,days=dim(year,month);
+  document.getElementById('monthTitle').textContent=MO[month-1];
+  document.getElementById('monthSub').textContent=String(year);
+  let tot=0,done=0;
+  for(let d=1;d<=days;d++)for(let h=0;h<state.habits.length;h++){tot++;if(isC(year,month,d,h))done++;}
+  const pct=tot>0?Math.round(done/tot*100):0;
+  document.getElementById('statHabits').textContent=state.habits.length;
+  document.getElementById('statDone').textContent=done;
+  document.getElementById('statPct').textContent=pct+'%';
+}
+function renderGrid(){
+  const{year,month}=state,days=dim(year,month);
+  const t=new Date(),td=t.getFullYear()===year&&t.getMonth()+1===month?t.getDate():-1;
+  let h='';
+  h+=`<div class="day-header-row"><div class="habit-col-head">습관 / 날짜</div>`;
+  for(let d=1;d<=days;d++){const w=dow(year,month,d);let c='day-cell-head';if(d===td)c+=' today';else if(w===0)c+=' sun';else if(w===6)c+=' sat';h+=`<div class="${c}">${DOW[w]}<br>${d}</div>`;}
+  h+=`<div class="total-col-head">합계</div></div>`;
+  state.habits.forEach((habit,hi)=>{
+    const tot=Array.from({length:days},(_,i)=>isC(year,month,i+1,hi)?1:0).reduce((a,b)=>a+b,0);
+    h+=`<div class="habit-row"><div class="habit-name"><span class="habit-emoji">${habit.emoji}</span><span class="habit-text">${habit.label}</span></div>`;
+    for(let d=1;d<=days;d++){const c=isC(year,month,d,hi);h+=`<div class="check-cell ${c?'checked':''}" onclick="toggle(${year},${month},${d},${hi})">${c?'✓':''}</div>`;}
+    h+=`<div class="total-cell">${tot}</div></div>`;
+  });
+  const dd=Array.from({length:days},(_,i)=>state.habits.filter((_,hi)=>isC(year,month,i+1,hi)).length);
+  const td2=dd.reduce((a,b)=>a+b,0);
+  h+=`<div class="summary-row done-row"><div class="summary-label">✅ Done</div>`;
+  dd.forEach(v=>{h+=`<div class="summary-cell">${v}</div>`;});
+  h+=`<div class="summary-total">${td2}</div></div>`;
+  h+=`<div class="summary-row progress-row"><div class="summary-label">📈 달성률</div>`;
+  dd.forEach(v=>{const p=state.habits.length>0?Math.round(v/state.habits.length*100):0;h+=`<div class="summary-cell">${p}%</div>`;});
+  const tp=(state.habits.length*days)>0?Math.round(td2/(state.habits.length*days)*100):0;
+  h+=`<div class="summary-total">${tp}%</div></div>`;
+  document.getElementById('gridInner').innerHTML=h;
+}
+function renderStats(){
+  const{year,month}=state,days=dim(year,month);
+  const dd=Array.from({length:days},(_,i)=>state.habits.filter((_,hi)=>isC(year,month,i+1,hi)).length);
+  const tot=dd.reduce((a,b)=>a+b,0),tp=state.habits.length*days,pct=tp>0?Math.round(tot/tp*100):0;
+  const circ=2*Math.PI*38;
+  document.getElementById('ringCircle').style.strokeDashoffset=circ*(1-pct/100);
+  document.getElementById('ringPct').textContent=pct+'%';
+  const em=pct>=80?'🏆':pct>=50?'💪':'🌱';
+  document.getElementById('ringInfo').innerHTML=`
+    <div class="ring-info-row"><span class="ring-info-label">달성</span><span class="ring-info-val">${tot}회</span></div>
+    <div class="ring-info-row"><span class="ring-info-label">목표</span><span class="ring-info-val">${tp}회</span></div>
+    <div class="ring-info-row"><span class="ring-info-label">평가</span><span class="ring-info-val">${em} ${pct>=80?'훌륭해요!':pct>=50?'잘 하고 있어요!':'조금 더 힘내요!'}</span></div>`;
+  if(days>1&&state.habits.length>0){
+    const W=300,H=70,P=5;
+    const pts=dd.map((v,i)=>[P+(i/(days-1))*(W-P*2),H-P-(v/state.habits.length)*(H-P*2)]);
+    const ls=pts.map(([x,y])=>`${x},${y}`).join(' ');
+    document.getElementById('sparkLine').setAttribute('points',ls);
+    document.getElementById('sparkFill').setAttribute('points',`0,${H} ${ls} ${W},${H}`);
+  }
+  document.getElementById('chartX').innerHTML=`<span>1일</span><span>${Math.ceil(days/2)}일</span><span>${days}일</span>`;
+  const ht=state.habits.map((_,hi)=>Array.from({length:days},(_,i)=>isC(year,month,i+1,hi)?1:0).reduce((a,b)=>a+b,0));
+  let bh='';
+  state.habits.forEach((h,hi)=>{
+    const p=Math.round(ht[hi]/days*100);
+    const fc=p>=80?'#2490b0':p>=50?'#5bbfdb':'#b8e4f0';
+    bh+=`<div class="habit-bar-row"><div class="habit-bar-top"><div class="habit-bar-label"><span>${h.emoji}</span><span>${h.label}</span></div><div class="habit-bar-val">${ht[hi]}일 (${p}%)</div></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${fc}"></div></div></div>`;
+  });
+  document.getElementById('habitBars').innerHTML=bh;
+}
+function render(){renderHeader();renderGrid();renderStats();}
+function switchTab(n,b){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));b.classList.add('active');document.getElementById('tab-'+n).classList.add('active');}
+function changeMonth(d){state.month+=d;if(state.month>12){state.month=1;state.year++;}if(state.month<1){state.month=12;state.year--;}render();}
+function openMenu(){document.getElementById('menuOverlay').classList.add('open');document.getElementById('menuSheet').classList.add('open');}
+function closeMenu(){document.getElementById('menuOverlay').classList.remove('open');document.getElementById('menuSheet').classList.remove('open');}
+let editHabits=[];
+function openHabitEdit(){closeMenu();editHabits=state.habits.map(h=>({...h}));renderEditList();document.getElementById('modalOverlay').classList.add('open');}
+function closeHabitEdit(){document.getElementById('modalOverlay').classList.remove('open');}
+function renderEditList(){let h='';editHabits.forEach((e,i)=>{h+=`<div class="habit-edit-item"><div class="habit-edit-emoji" onclick="pickEmoji(${i})">${e.emoji}</div><input class="habit-edit-input" value="${e.label}" oninput="editHabits[${i}].label=this.value" placeholder="습관 이름"><button class="del-btn" onclick="removeHabitEdit(${i})">✕</button></div>`;});document.getElementById('habitEditList').innerHTML=h;}
+function addHabitEditItem(){editHabits.push({emoji:'⭐',label:''});renderEditList();}
+function removeHabitEdit(i){editHabits.splice(i,1);renderEditList();}
+function pickEmoji(i){const e=prompt('이모지를 입력하세요',editHabits[i].emoji);if(e){editHabits[i].emoji=e;renderEditList();}}
+function saveHabits(){state.habits=editHabits.filter(h=>h.label.trim());saveState();closeHabitEdit();render();showToast('✅ 습관이 저장되었어요');}
+function exportJSON(){const b=new Blob([JSON.stringify({habits:state.habits,checks:state.checks},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`habit_backup_${state.year}${String(state.month).padStart(2,'0')}.json`;a.click();showToast('📥 JSON 백업 완료!');}
+function exportCSV(){const{year,month}=state,days=dim(year,month);let csv='습관,'+Array.from({length:days},(_,i)=>i+1).join(',')+',합계\n';state.habits.forEach((h,hi)=>{const r=Array.from({length:days},(_,i)=>isC(year,month,i+1,hi)?1:0);csv+=`${h.emoji}${h.label},${r.join(',')},${r.reduce((a,b)=>a+b,0)}\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download=`habit_${year}${String(month).padStart(2,'0')}.csv`;a.click();showToast('📊 CSV 내보내기 완료!');}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{try{const d=JSON.parse(ev.target.result);if(d.habits)state.habits=d.habits;if(d.checks)state.checks=d.checks;saveState();render();showToast('📤 데이터 복원 완료!');}catch{showToast('⚠️ 파일을 읽을 수 없어요');}};r.readAsText(f);e.target.value='';}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+loadState();render();
+</script>
+</body>
+</html>
