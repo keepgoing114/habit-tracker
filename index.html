@@ -20,10 +20,10 @@
 const { useState, useEffect } = React;
 
 const DEFAULT_HABITS = [
-  { id: 1, name: "블로그 글쓰기", emoji: "✍️", sticker: "⭐", color: "#FFB800" },
-  { id: 2, name: "운동 30분", emoji: "🏃", sticker: "🔥", color: "#FF6B35" },
-  { id: 3, name: "독서 20분", emoji: "📚", sticker: "💎", color: "#4A9EFF" },
-  { id: 4, name: "쇼츠 기획", emoji: "🎬", sticker: "🌟", color: "#B06EFF" },
+  { id: 1, name: "블로그 글쓰기", sticker: "⭐", color: "#FFB800" },
+  { id: 2, name: "운동 30분", sticker: "🔥", color: "#FF6B35" },
+  { id: 3, name: "독서 20분", sticker: "💎", color: "#4A9EFF" },
+  { id: 4, name: "쇼츠 기획", sticker: "🌟", color: "#B06EFF" },
 ];
 
 const STICKER_OPTIONS = ["⭐","🔥","💎","🌟","🍀","🌸","🎯","💫","🏆","🍭","🌈","💜","❤️","🧡","💛"];
@@ -139,8 +139,8 @@ function HabitSticker() {
   const [bursts, setBursts] = useState([]);
   const [newStamp, setNewStamp] = useState(null);
   const [editHabit, setEditHabit] = useState(null);
-  const [newHabit, setNewHabit] = useState({ name:"", emoji:"🌟", sticker:"⭐", color:"#FFB800" });
-  const [selectedHabit, setSelectedHabit] = useState(habits[0]?.id);
+  const [newHabit, setNewHabit] = useState({ name:"", sticker:"⭐", color:"#FFB800" });
+  const [selectedHabit, setSelectedHabit] = useState(null);
   const [viewDate, setViewDate] = useState(getTodayKey());
 
   const t = isDark ? THEME.dark : THEME.light;
@@ -347,7 +347,6 @@ function HabitSticker() {
                     </div>
                     <div style={{ flex:1 }}>
                       <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
-                        <span style={{fontSize:15}}>{habit.emoji}</span>
                         <span style={{ fontSize:15, fontWeight:700, color: done ? t.text : t.textSub }}>{habit.name}</span>
                       </div>
                       <div style={{ height:6, background:t.progressTrack, borderRadius:10, overflow:"hidden", marginBottom:6 }}>
@@ -381,87 +380,154 @@ function HabitSticker() {
       {/* 스티커북 */}
       {view==="book" && (
         <div style={{ padding:"20px 16px" }}>
-          <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", paddingBottom:4, scrollbarWidth:"none" }}>
-            {habits.map(h => (
-              <button key={h.id} onClick={() => setSelectedHabit(h.id)} style={{
-                background: selectedHabit===h.id ? h.color : t.tagInactive,
-                border:"none", color: selectedHabit===h.id ? "#fff" : t.tagInactiveText,
-                borderRadius:20, padding:"6px 14px", fontSize:12,
-                fontWeight:700, cursor:"pointer", whiteSpace:"nowrap", flexShrink:0,
-                boxShadow: selectedHabit===h.id ? `0 4px 14px ${h.color}66` : "none",
-                transition:"all 0.2s",
-              }}>{h.emoji} {h.name}</button>
-            ))}
-          </div>
-          {(() => {
-            const habit = habits.find(h => h.id===selectedHabit) || habits[0];
-            if (!habit) return null;
-            const grid = get66Data(habit.id);
-            const total = getTotalDone(habit.id);
-            const pct = Math.min((total/TOTAL)*100, 100);
-            return (
-              <div style={{
-                background:t.bookCard, border:`1px solid ${habit.color}33`,
-                borderRadius:20, padding:"20px 16px",
-                boxShadow:`0 8px 40px ${habit.color}22`,
-              }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-                  <div>
-                    <div style={{ fontSize:16, fontWeight:800, color:t.text }}>{habit.emoji} {habit.name}</div>
-                    <div style={{ fontSize:11, color:t.textSub, marginTop:2 }}>
-                      {total}개 모음 · {TOTAL-total}개 남음
+          {/* 전체 요약 그리드 */}
+          {!selectedHabit ? (
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              {habits.map(h => {
+                const total = getTotalDone(h.id);
+                const pct = Math.min((total/TOTAL)*100, 100);
+                const grid = get66Data(h.id);
+                return (
+                  <div key={h.id} onClick={() => setSelectedHabit(h.id)} style={{
+                    background:t.bookCard, border:`1px solid ${h.color}33`,
+                    borderRadius:16, padding:"14px 16px",
+                    cursor:"pointer",
+                    boxShadow:`0 4px 20px ${h.color}11`,
+                    transition:"all 0.2s",
+                  }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        <div style={{
+                          width:32, height:32, borderRadius:"50%",
+                          background:`radial-gradient(circle at 35% 35%, ${h.color}FF, ${h.color}88)`,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          fontSize:16, boxShadow:`0 2px 8px ${h.color}55`,
+                          border:`1.5px solid ${h.color}AA`, flexShrink:0,
+                        }}>{h.sticker}</div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:800, color:t.text }}>{h.name}</div>
+                          <div style={{ fontSize:10, color:t.textSub }}>{total}개 · {Math.round(pct)}%</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:10, color:h.color, fontWeight:700 }}>
+                        {total>=TOTAL ? "★ 완성!" : `${TOTAL-total}개 남음`}
+                      </div>
+                    </div>
+                    {/* 미니 66칸 그리드 */}
+                    <div style={{ display:"grid", gridTemplateColumns:"repeat(11, 1fr)", gap:3 }}>
+                      {grid.map((cell,i) => (
+                        <div key={i} style={{
+                          width:"100%", aspectRatio:"1", borderRadius:"50%",
+                          background: cell.state==="done"
+                            ? `radial-gradient(circle at 35% 35%, ${h.color}FF, ${h.color}88)`
+                            : cell.state==="future" ? "rgba(255,255,255,0.01)" : t.stickerEmpty,
+                          border: cell.state==="done" ? `1px solid ${h.color}CC`
+                            : `1px dashed ${cell.state==="future" ? "rgba(255,255,255,0.03)" : t.stickerEmptyBorder}`,
+                        }} />
+                      ))}
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* 상세 뷰 */
+            (() => {
+              const habit = habits.find(h => h.id===selectedHabit) || habits[0];
+              if (!habit) return null;
+              const grid = get66Data(habit.id);
+              const total = getTotalDone(habit.id);
+              const pct = Math.min((total/TOTAL)*100, 100);
+              return (
+                <div>
+                  <button onClick={() => setSelectedHabit(null)} style={{
+                    background:"none", border:"none", color:t.textSub,
+                    fontSize:13, cursor:"pointer", marginBottom:14,
+                    display:"flex", alignItems:"center", gap:4, padding:0,
+                  }}>‹ 전체 보기</button>
                   <div style={{
-                    fontSize:28,
-                    background:`radial-gradient(circle at 35% 35%, ${habit.color}FF, ${habit.color}88)`,
-                    width:48, height:48, borderRadius:"50%",
-                    display:"flex", alignItems:"center", justifyContent:"center",
-                    boxShadow:`0 4px 16px ${habit.color}66`,
-                    border:`2px solid ${habit.color}AA`, flexShrink:0,
-                  }}>{habit.sticker}</div>
-                </div>
-                <div style={{ marginBottom:16 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-                    <span style={{ fontSize:11, color:t.textSub }}>진행률</span>
-                    <span style={{ fontSize:11, fontWeight:700, color:habit.color }}>{Math.round(pct)}%</span>
-                  </div>
-                  <div style={{ height:8, background:t.progressTrack, borderRadius:10, overflow:"hidden" }}>
-                    <div style={{
-                      height:"100%", width:`${pct}%`,
-                      background:`linear-gradient(90deg, ${habit.color}, ${habit.color}CC)`,
-                      borderRadius:10, transition:"width 0.5s",
-                      boxShadow:`0 0 12px ${habit.color}88`,
-                    }} />
-                  </div>
-                </div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(11, 1fr)", gap:5 }}>
-                  {grid.map((cell,i) => (
-                    <StickerCell key={i} index={i} state={cell.state}
-                      sticker={habit.sticker} color={habit.color} t={t} />
-                  ))}
-                </div>
-                {total>=TOTAL && (
-                  <div style={{
-                    marginTop:16, textAlign:"center", padding:"12px",
-                    background:`linear-gradient(135deg, ${habit.color}22, transparent)`,
-                    borderRadius:12, border:`1px solid ${habit.color}44`,
+                    background:t.bookCard, border:`1px solid ${habit.color}33`,
+                    borderRadius:20, padding:"20px 16px",
+                    boxShadow:`0 8px 40px ${habit.color}22`,
                   }}>
-                    <div style={{fontSize:24}}>🏆</div>
-                    <div style={{
-                      fontSize:13, fontWeight:900, marginTop:4,
-                      background:"linear-gradient(90deg, #FFB800, #FF6B35)",
-                      WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
-                    }}>66일 완성! 습관이 됐어요 🎉</div>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+                      <div>
+                        <div style={{ fontSize:16, fontWeight:800, color:t.text }}>{habit.name}</div>
+                        <div style={{ fontSize:11, color:t.textSub, marginTop:2 }}>
+                          {total}개 모음 · {TOTAL-total}개 남음
+                        </div>
+                      </div>
+                      <div style={{
+                        fontSize:28,
+                        background:`radial-gradient(circle at 35% 35%, ${habit.color}FF, ${habit.color}88)`,
+                        width:48, height:48, borderRadius:"50%",
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        boxShadow:`0 4px 16px ${habit.color}66`,
+                        border:`2px solid ${habit.color}AA`, flexShrink:0,
+                      }}>{habit.sticker}</div>
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+                        <span style={{ fontSize:11, color:t.textSub }}>진행률</span>
+                        <span style={{ fontSize:11, fontWeight:700, color:habit.color }}>{Math.round(pct)}%</span>
+                      </div>
+                      <div style={{ height:8, background:t.progressTrack, borderRadius:10, overflow:"hidden" }}>
+                        <div style={{
+                          height:"100%", width:`${pct}%`,
+                          background:`linear-gradient(90deg, ${habit.color}, ${habit.color}CC)`,
+                          borderRadius:10, transition:"width 0.5s",
+                          boxShadow:`0 0 12px ${habit.color}88`,
+                        }} />
+                      </div>
+                    </div>
+                    <div style={{ display:"grid", gridTemplateColumns:"repeat(11, 1fr)", gap:5 }}>
+                      {grid.map((cell,i) => (
+                        <div key={i} style={{
+                          width:"100%", aspectRatio:"1",
+                          background: cell.state==="done"
+                            ? `radial-gradient(circle at 35% 35%, ${habit.color}FF, ${habit.color}99)`
+                            : cell.state==="future" ? "rgba(255,255,255,0.02)" : t.stickerEmpty,
+                          borderRadius:"50%",
+                          border: cell.state==="done" ? `1.5px solid ${habit.color}CC`
+                            : `1.5px dashed ${cell.state==="future" ? "rgba(255,255,255,0.05)" : t.stickerEmptyBorder}`,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          fontSize:"clamp(7px, 2vw, 10px)",
+                          color: cell.state==="done" ? "transparent" : cell.state==="future" ? "rgba(255,255,255,0.04)" : t.stickerEmptyNum,
+                          position:"relative",
+                        }}>
+                          {cell.state==="done" ? (
+                            <>
+                              <span style={{ fontSize:"clamp(10px,3vw,16px)" }}>{habit.sticker}</span>
+                              <div style={{ position:"absolute", top:"15%", left:"20%", width:"30%", height:"15%",
+                                background:"rgba(255,255,255,0.5)", borderRadius:"50%", transform:"rotate(-30deg)" }} />
+                            </>
+                          ) : i+1}
+                        </div>
+                      ))}
+                    </div>
+                    {total>=TOTAL && (
+                      <div style={{
+                        marginTop:16, textAlign:"center", padding:"12px",
+                        background:`linear-gradient(135deg, ${habit.color}22, transparent)`,
+                        borderRadius:12, border:`1px solid ${habit.color}44`,
+                      }}>
+                        <div style={{fontSize:24}}>🏆</div>
+                        <div style={{
+                          fontSize:13, fontWeight:900, marginTop:4,
+                          background:"linear-gradient(90deg, #FFB800, #FF6B35)",
+                          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+                        }}>66일 완성! 습관이 됐어요 🎉</div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })()}
+                </div>
+              );
+            })()
+          )}
         </div>
       )}
 
-      {/* EDIT */}
+            {/* EDIT */}
       {view==="edit" && (
         <div style={{ padding:"20px 16px" }}>
           {habits.map((habit,idx) => (
@@ -478,7 +544,7 @@ function HabitSticker() {
               }}>{habit.sticker}</div>
               <div style={{flex:1}}>
                 <div style={{ fontSize:13, fontWeight:700, color:t.text }}>{habit.name}</div>
-                <div style={{ fontSize:11, color:t.textSub }}>{habit.emoji} · {getTotalDone(habit.id)}/{TOTAL}</div>
+                <div style={{ fontSize:11, color:t.textSub }}>{getTotalDone(habit.id)}/{TOTAL}</div>
               </div>
               <button onClick={() => setEditHabit({...habit,idx})} style={{
                 background:t.surface, border:`1px solid ${t.border}`,
@@ -526,8 +592,8 @@ function HabitSticker() {
               </div>
               <button onClick={() => {
                 if (!newHabit.name.trim()) return;
-                setHabits([...habits, { id:Date.now(), emoji:"🌟", ...newHabit }]);
-                setNewHabit({ name:"", emoji:"🌟", sticker:"⭐", color:"#FFB800" });
+                setHabits([...habits, { id:Date.now(), ...newHabit }]);
+                setNewHabit({ name:"", sticker:"⭐", color:"#FFB800" });
               }} style={{
                 width:"100%",
                 background:"linear-gradient(135deg, #FFB800, #FF6B35)",
