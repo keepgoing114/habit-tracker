@@ -546,15 +546,33 @@ function HabitSticker() {
                 <div style={{ fontSize:13, fontWeight:700, color:t.text }}>{habit.name}</div>
                 <div style={{ fontSize:11, color:t.textSub }}>{getTotalDone(habit.id)}/{TOTAL}</div>
               </div>
-              <button onClick={() => setEditHabit({...habit,idx})} style={{
-                background:t.surface, border:`1px solid ${t.border}`,
-                color:t.textSub, borderRadius:8, padding:"5px 12px", fontSize:11, cursor:"pointer",
-              }}>편집</button>
-              {habits.length>1 && (
-                <button onClick={() => setHabits(habits.filter((_,i)=>i!==idx))} style={{
-                  background:"none", border:"none", color:"#E85D3F88", fontSize:16, cursor:"pointer",
-                }}>✕</button>
-              )}
+              <div style={{ display:"flex", gap:4 }}>
+                <button onClick={() => {
+                  if (idx===0) return;
+                  const a=[...habits]; [a[idx-1],a[idx]]=[a[idx],a[idx-1]]; setHabits(a);
+                }} style={{
+                  background:t.surface, border:`1px solid ${t.border}`,
+                  color: idx===0 ? t.border : t.textSub,
+                  borderRadius:8, padding:"5px 8px", fontSize:13, cursor: idx===0 ? "default" : "pointer",
+                }}>↑</button>
+                <button onClick={() => {
+                  if (idx===habits.length-1) return;
+                  const a=[...habits]; [a[idx],a[idx+1]]=[a[idx+1],a[idx]]; setHabits(a);
+                }} style={{
+                  background:t.surface, border:`1px solid ${t.border}`,
+                  color: idx===habits.length-1 ? t.border : t.textSub,
+                  borderRadius:8, padding:"5px 8px", fontSize:13, cursor: idx===habits.length-1 ? "default" : "pointer",
+                }}>↓</button>
+                <button onClick={() => setEditHabit({...habit,idx})} style={{
+                  background:t.surface, border:`1px solid ${t.border}`,
+                  color:t.textSub, borderRadius:8, padding:"5px 12px", fontSize:11, cursor:"pointer",
+                }}>편집</button>
+                {habits.length>1 && (
+                  <button onClick={() => setHabits(habits.filter((_,i)=>i!==idx))} style={{
+                    background:"none", border:"none", color:"#E85D3F88", fontSize:16, cursor:"pointer",
+                  }}>✕</button>
+                )}
+              </div>
             </div>
           ))}
           {habits.length<5 && (
