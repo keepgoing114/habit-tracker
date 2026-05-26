@@ -1,23 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>습관 스티커북</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    body { background:#0D1220; }
-    input, button { font-family: inherit; }
-    ::-webkit-scrollbar { display:none; }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
-const { useState, useEffect } = React;
+import { useState, useEffect } from "react";
 
 const DEFAULT_HABITS = [
   { id: 1, name: "블로그 글쓰기", emoji: "✍️", sticker: "⭐", color: "#FFB800" },
@@ -130,7 +111,7 @@ function Burst({ x, y, color, onDone }) {
   );
 }
 
-function HabitSticker() {
+export default function HabitSticker() {
   const [habits, setHabits] = useStorage("hs-habits", DEFAULT_HABITS);
   const [checks, setChecks] = useStorage("hs-checks", {});
   const [startDates, setStartDates] = useStorage("hs-starts", {});
@@ -593,8 +574,3 @@ function HabitSticker() {
     </div>
   );
 }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<HabitSticker />);
-  </script>
-</body>
-</html>
