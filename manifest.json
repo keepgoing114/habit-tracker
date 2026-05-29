@@ -2,7 +2,7 @@
   "name": "데일리 루틴",
   "short_name": "데일리루틴",
   "description": "습관 + 할일 데일리 기록",
-  "start_url": "/habit-tracker/",
+"start_url": ".",
   "display": "standalone",
   "background_color": "#0D1220",
   "theme_color": "#FFB800",
