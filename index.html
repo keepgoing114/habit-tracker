@@ -3,682 +3,490 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>습관 스티커북</title>
+  <title>데일리 루틴</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    body { background:#0D1220; }
-    input, button { font-family: inherit; }
+    input, button, textarea { font-family: inherit; }
     ::-webkit-scrollbar { display:none; }
+    body { font-family: 'Apple SD Gothic Neo','Pretendard',sans-serif; }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
+
+/* ── 상수 ── */
+const DAYS_KO = ["일","월","화","수","목","금","토"];
 
 const DEFAULT_HABITS = [
-  { id: 1, name: "블로그 글쓰기", sticker: "⭐", color: "#FFB800" },
-  { id: 2, name: "운동 30분", sticker: "🔥", color: "#FF6B35" },
-  { id: 3, name: "독서 20분", sticker: "💎", color: "#4A9EFF" },
-  { id: 4, name: "쇼츠 기획", sticker: "🌟", color: "#B06EFF" },
+  { id:1, name:"독서 30p",     sticker:"💎", color:"#4A9EFF", block:"morning" },
+  { id:2, name:"블로그 글쓰기", sticker:"⭐", color:"#FFB800", block:"morning" },
+  { id:3, name:"운동 30분",     sticker:"🔥", color:"#FF6B35", block:"afternoon" },
+  { id:4, name:"일본어 10분",   sticker:"🍀", color:"#2DCB73", block:"evening" },
+  { id:5, name:"영어문장 10개", sticker:"🌟", color:"#B06EFF", block:"morning" },
+];
+
+const DEFAULT_TODOS = {
+  morning:   ["미팅 자료 준비"],
+  afternoon: ["클라이언트 피드백 확인"],
+  evening:   ["쇼츠 기획 1개"],
+};
+
+const BLOCKS = [
+  { id:"morning",   label:"오전", time:"05:30 — 12:00", color:"#FFB800", bg:"rgba(255,184,0,0.08)",    border:"rgba(255,184,0,0.22)"    },
+  { id:"afternoon", label:"오후", time:"12:00 — 18:00", color:"#2DCB73", bg:"rgba(45,203,115,0.08)",   border:"rgba(45,203,115,0.22)"   },
+  { id:"evening",   label:"저녁", time:"18:00 — 24:00", color:"#B06EFF", bg:"rgba(176,110,255,0.08)",  border:"rgba(176,110,255,0.22)"  },
 ];
 
 const STICKER_OPTIONS = ["⭐","🔥","💎","🌟","🍀","🌸","🎯","💫","🏆","🍭","🌈","💜","❤️","🧡","💛"];
-const COLOR_OPTIONS = ["#FFB800","#FF6B35","#4A9EFF","#B06EFF","#2DCB73","#F06292","#E85D3F","#00BCD4"];
-const TOTAL = 66;
+const COLOR_OPTIONS   = ["#FFB800","#FF6B35","#4A9EFF","#B06EFF","#2DCB73","#F06292","#E85D3F","#00BCD4"];
 
+/* ── 테마 ── */
 const THEME = {
   dark: {
-    bg: "linear-gradient(160deg, #1A0E2E 0%, #0D1220 50%, #1A1A0A 100%)",
-    surface: "rgba(255,255,255,0.04)",
-    border: "rgba(255,255,255,0.08)",
-    text: "#F0EDE8",
-    textSub: "rgba(255,255,255,0.4)",
-    inputBg: "rgba(255,255,255,0.06)",
-    modalBg: "#1A1A2E",
-    headerBorder: "rgba(255,255,255,0.06)",
-    progressTrack: "rgba(255,255,255,0.08)",
-    stickerEmpty: "rgba(255,255,255,0.06)",
-    stickerEmptyBorder: "rgba(255,255,255,0.1)",
-    stickerEmptyNum: "rgba(255,255,255,0.08)",
-    tabInactive: "rgba(255,255,255,0.3)",
-    tagInactive: "rgba(255,255,255,0.06)",
-    tagInactiveText: "rgba(255,255,255,0.4)",
-    dashed: "rgba(255,255,255,0.1)",
-    overlay: "rgba(0,0,0,0.7)",
-    bookCard: "linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02))",
-    doneBg: "22",
+    appBg:    "#0D1220",
+    cardBg:   "rgba(255,255,255,0.05)",
+    headerBg: "#0D1220",
+    border:   "rgba(255,255,255,0.09)",
+    text:     "#F0EDE8",
+    textSub:  "rgba(255,255,255,0.38)",
+    tabOff:   "rgba(255,255,255,0.3)",
+    rowLine:  "rgba(255,255,255,0.05)",
+    addTxt:   "rgba(255,255,255,0.25)",
+    emptyDot: "rgba(255,255,255,0.07)",
+    inputBg:  "rgba(255,255,255,0.07)",
+    statBg:   "rgba(255,255,255,0.05)",
+    todoTag:  "rgba(255,255,255,0.09)",
+    todoTagTxt:"rgba(255,255,255,0.35)",
+    calHover: "rgba(255,255,255,0.05)",
   },
   light: {
-    bg: "linear-gradient(160deg, #FFF8ED 0%, #EEF4FF 50%, #FAFAFA 100%)",
-    surface: "rgba(0,0,0,0.03)",
-    border: "rgba(0,0,0,0.09)",
-    text: "#1A1A2E",
-    textSub: "rgba(0,0,0,0.42)",
-    inputBg: "rgba(0,0,0,0.04)",
-    modalBg: "#FFFFFF",
-    headerBorder: "rgba(0,0,0,0.07)",
-    progressTrack: "rgba(0,0,0,0.07)",
-    stickerEmpty: "rgba(0,0,0,0.05)",
-    stickerEmptyBorder: "rgba(0,0,0,0.13)",
-    stickerEmptyNum: "rgba(0,0,0,0.13)",
-    tabInactive: "rgba(0,0,0,0.35)",
-    tagInactive: "rgba(0,0,0,0.06)",
-    tagInactiveText: "rgba(0,0,0,0.4)",
-    dashed: "rgba(0,0,0,0.12)",
-    overlay: "rgba(0,0,0,0.45)",
-    bookCard: "rgba(255,255,255,0.9)",
-    doneBg: "18",
+    appBg:    "#F2F2F7",
+    cardBg:   "#FFFFFF",
+    headerBg: "#FFFFFF",
+    border:   "rgba(0,0,0,0.09)",
+    text:     "#1C1C1E",
+    textSub:  "rgba(0,0,0,0.4)",
+    tabOff:   "rgba(0,0,0,0.3)",
+    rowLine:  "rgba(0,0,0,0.05)",
+    addTxt:   "rgba(0,0,0,0.3)",
+    emptyDot: "rgba(0,0,0,0.07)",
+    inputBg:  "#F2F2F7",
+    statBg:   "#F2F2F7",
+    todoTag:  "rgba(0,0,0,0.06)",
+    todoTagTxt:"rgba(0,0,0,0.38)",
+    calHover: "rgba(0,0,0,0.04)",
   },
 };
 
+/* ── 유틸 ── */
 function useStorage(key, init) {
   const [val, setVal] = useState(() => {
     try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : init; } catch { return init; }
   });
-  const set = (v) => { setVal(v); try { localStorage.setItem(key, JSON.stringify(v)); } catch {} };
+  const set = v => { setVal(v); try { localStorage.setItem(key, JSON.stringify(v)); } catch {} };
   return [val, set];
 }
 
-const getTodayKey = () => new Date().toISOString().slice(0, 10);
+const todayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
 
-function StickerCell({ state, sticker, color, index, t }) {
-  if (state === "done") return (
-    <div style={{
-      width:"100%", aspectRatio:"1",
-      background:`radial-gradient(circle at 35% 35%, ${color}FF, ${color}99)`,
-      borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center",
-      fontSize:"clamp(10px, 3vw, 16px)",
-      boxShadow:`0 2px 8px ${color}66, inset 0 1px 2px rgba(255,255,255,0.4)`,
-      position:"relative", border:`1.5px solid ${color}CC`,
-    }}>
-      {sticker}
-      <div style={{ position:"absolute", top:"15%", left:"20%", width:"30%", height:"15%",
-        background:"rgba(255,255,255,0.5)", borderRadius:"50%", transform:"rotate(-30deg)" }} />
-    </div>
-  );
-  // future와 empty 모두 빈 원으로 표시 (번호 포함)
-  return (
-    <div style={{
-      width:"100%", aspectRatio:"1",
-      background: state === "future" ? "rgba(255,255,255,0.02)" : t.stickerEmpty,
-      borderRadius:"50%",
-      border: `1.5px dashed ${state === "future" ? "rgba(255,255,255,0.05)" : t.stickerEmptyBorder}`,
-      display:"flex", alignItems:"center", justifyContent:"center",
-      fontSize:"clamp(7px, 2vw, 10px)",
-      color: state === "future" ? "rgba(255,255,255,0.04)" : t.stickerEmptyNum,
-    }}>{index+1}</div>
-  );
-}
+const shiftDate = (str, n) => {
+  const d = new Date(str + "T00:00:00");
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0,10);
+};
 
-function Burst({ x, y, color, onDone }) {
-  useEffect(() => { const t = setTimeout(onDone, 700); return () => clearTimeout(t); }, []);
-  const particles = Array.from({length:8}, (_,i) => ({ angle:(i/8)*360, dist:40+Math.random()*20, delay:Math.random()*100 }));
-  return (
-    <div style={{ position:"fixed", left:x, top:y, pointerEvents:"none", zIndex:9999 }}>
-      {particles.map((p,i) => (
-        <div key={i} style={{
-          position:"absolute", width:8, height:8, background:color, borderRadius:"50%",
-          transform:`rotate(${p.angle}deg) translateY(-${p.dist}px)`, opacity:0,
-          animation:`burst 0.6s ${p.delay}ms ease-out forwards`,
-        }} />
-      ))}
-    </div>
-  );
-}
+const fmtDate = (str) => {
+  const d = new Date(str + "T00:00:00");
+  return `${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()} (${DAYS_KO[d.getDay()]})`;
+};
 
-function HabitSticker() {
-  const [habits, setHabits] = useStorage("hs-habits", DEFAULT_HABITS);
-  const [checks, setChecks] = useStorage("hs-checks", {});
-  const [startDates, setStartDates] = useStorage("hs-starts", {});
-  const [isDark, setIsDark] = useStorage("hs-theme", true);
-  const [view, setView] = useState("today");
-  const [bursts, setBursts] = useState([]);
-  const [newStamp, setNewStamp] = useState(null);
+const fmtShort = (str) => {
+  const d = new Date(str + "T00:00:00");
+  return `${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS_KO[d.getDay()]})`;
+};
+
+/* ── 메인 컴포넌트 ── */
+function App() {
+  const [isDark, setIsDark]       = useStorage("dr-dark", true);
+  const [habits, setHabits]       = useStorage("dr-habits", DEFAULT_HABITS);
+  const [checks, setChecks]       = useStorage("dr-checks", {});   // { "YYYY-MM-DD": [id,...] }
+  const [todos, setTodos]         = useStorage("dr-todos", DEFAULT_TODOS); // { morning:[...], ... }
+  const [todoDone, setTodoDone]   = useStorage("dr-tdone", {});    // { "YYYY-MM-DD-block-idx": bool }
+  const [tab, setTab]             = useState("today");
+  const [viewDate, setViewDate]   = useState(todayKey());
+  const [calDay, setCalDay]       = useState(() => new Date().getDate());
+  const [calMonth, setCalMonth]   = useState(() => ({ y: new Date().getFullYear(), m: new Date().getMonth() }));
+  const [addingIn, setAddingIn]   = useState(null);
+  const [newTxt, setNewTxt]       = useState("");
   const [editHabit, setEditHabit] = useState(null);
-  const [newHabit, setNewHabit] = useState({ name:"", sticker:"⭐", color:"#FFB800" });
-  const [selectedHabit, setSelectedHabit] = useState(null);
-  const [viewDate, setViewDate] = useState(getTodayKey());
+  const [newHabit, setNewHabit]   = useState({ name:"", sticker:"⭐", color:"#FFB800", block:"morning" });
+  const inputRef = useRef(null);
 
-  const t = isDark ? THEME.dark : THEME.light;
-  const today = getTodayKey();
-  const isToday = viewDate === today;
+  const T = isDark ? THEME.dark : THEME.light;
+  const TODAY = todayKey();
 
-  const shiftDate = (dateStr, days) => {
-    const d = new Date(dateStr); d.setDate(d.getDate()+days);
-    return d.toISOString().slice(0,10);
+  /* 체크 토글 */
+  const toggleHabit = id => {
+    const cur = checks[viewDate] || [];
+    setChecks({ ...checks, [viewDate]: cur.includes(id) ? cur.filter(x=>x!==id) : [...cur, id] });
   };
-  const fmtDate = (dateStr) => {
-    const d = new Date(dateStr);
-    const days = ["일","월","화","수","목","금","토"];
-    if (dateStr === today) return "오늘";
-    if (dateStr === shiftDate(today,-1)) return "어제";
-    return `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  const toggleTodo = (block, idx) => {
+    const k = `${viewDate}-${block}-${idx}`;
+    setTodoDone({ ...todoDone, [k]: !todoDone[k] });
   };
 
-  const isCheckedToday = (id) => !!checks[`${id}-${viewDate}`];
-  const getTotalDone = (id) => Object.keys(checks).filter(k => k.startsWith(`${id}-`) && checks[k]).length;
-  const getStreak = (id) => {
-    let s=0, d=new Date();
-    while(true) { const k=`${id}-${d.toISOString().slice(0,10)}`; if(checks[k]){s++;d.setDate(d.getDate()-1);}else break; }
-    return s;
+  const addTodo = block => {
+    if (!newTxt.trim()) { setAddingIn(null); return; }
+    setTodos({ ...todos, [block]: [...(todos[block]||[]), newTxt.trim()] });
+    setNewTxt(""); setAddingIn(null);
   };
 
-  const handleCheck = (habit, e) => {
-    const key = `${habit.id}-${viewDate}`;
-    const wasDone = !!checks[key];
-    setChecks({ ...checks, [key]: !wasDone });
-    if (!wasDone) {
-      if (!startDates[habit.id]) setStartDates({ ...startDates, [habit.id]: viewDate });
-      const rect = e.currentTarget.getBoundingClientRect();
-      const id = Date.now();
-      setBursts(b => [...b, { id, x:rect.left+rect.width/2, y:rect.top+rect.height/2, color:habit.color }]);
-      setNewStamp(habit.id);
-      setTimeout(() => setNewStamp(null), 600);
-    }
+  const removeTodo = (block, idx) => {
+    const arr = [...(todos[block]||[])];
+    arr.splice(idx,1);
+    setTodos({ ...todos, [block]: arr });
   };
 
-  const get66Data = (habitId) => {
-    const start = startDates[habitId] || today;
-    const startD = new Date(start);
-    return Array.from({length:TOTAL}, (_,i) => {
-      const d = new Date(startD); d.setDate(d.getDate()+i);
-      const key = `${habitId}-${d.toISOString().slice(0,10)}`;
-      const isPast = d <= new Date();
-      if (!isPast) return { state:"future" };
-      return { state: checks[key] ? "done" : "empty" };
-    });
+  /* 날짜 클릭 → 달력 이동 */
+  const goCalendar = () => {
+    const d = new Date(viewDate + "T00:00:00");
+    setCalMonth({ y: d.getFullYear(), m: d.getMonth() });
+    setCalDay(d.getDate());
+    setTab("calendar");
   };
 
-  const allDone = habits.every(h => isCheckedToday(h.id)) && isToday;
+  /* 달력 */
+  const daysInMonth = (y,m) => new Date(y, m+1, 0).getDate();
+  const firstDow    = (y,m) => new Date(y, m, 1).getDay();
+  const calDateStr  = (d) => `${calMonth.y}-${String(calMonth.m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  const calChecks   = (d) => checks[calDateStr(d)] || [];
 
-  const inputStyle = {
-    width:"100%", background:t.inputBg, border:`1px solid ${t.border}`,
-    borderRadius:10, padding:"10px 14px", color:t.text,
-    fontSize:14, outline:"none", boxSizing:"border-box",
-    fontFamily:"'Apple SD Gothic Neo','Pretendard',sans-serif",
-  };
+  /* 스타일 헬퍼 */
+  const card = { background: T.cardBg, border:`1px solid ${T.border}`, borderRadius:14, transition:"background 0.3s" };
 
+  useEffect(() => { document.body.style.background = T.appBg; }, [T.appBg]);
+  useEffect(() => { if (addingIn && inputRef.current) inputRef.current.focus(); }, [addingIn]);
+
+  /* ────────────────── RENDER ────────────────── */
   return (
-    <div style={{
-      minHeight:"100vh", background:t.bg, color:t.text,
-      fontFamily:"'Apple SD Gothic Neo','Pretendard',sans-serif",
-      maxWidth:420, margin:"0 auto", paddingBottom:80,
-      transition:"background 0.35s, color 0.35s",
-    }}>
-      <style>{`
-        @keyframes burst { 0%{opacity:1;transform:rotate(var(--a,0deg)) translateY(-10px);}
-          100%{opacity:0;transform:rotate(var(--a,0deg)) translateY(-50px) scale(0);} }
-        @keyframes stamp { 0%{transform:scale(2.5);opacity:0;} 40%{transform:scale(0.85);opacity:1;}
-          70%{transform:scale(1.1);} 100%{transform:scale(1);opacity:1;} }
-        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
-      `}</style>
+    <div style={{ minHeight:"100vh", background:T.appBg, color:T.text, maxWidth:420, margin:"0 auto", paddingBottom:80, transition:"background 0.3s, color 0.3s" }}>
 
-      {bursts.map(b => (
-        <Burst key={b.id} x={b.x} y={b.y} color={b.color}
-          onDone={() => setBursts(bs => bs.filter(x => x.id !== b.id))} />
-      ))}
-
-      {/* Header */}
-      <div style={{ padding:"24px 20px 0", borderBottom:`1px solid ${t.headerBorder}` }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+      {/* ── 헤더 ── */}
+      <div style={{ background:T.headerBg, padding:"22px 18px 0", borderBottom:`1px solid ${T.border}`, position:"sticky", top:0, zIndex:20, transition:"background 0.3s" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14 }}>
           <div>
-            <div style={{
-              fontSize:22, fontWeight:900, letterSpacing:"-0.5px",
-              background:"linear-gradient(90deg, #FFB800, #FF6B35, #B06EFF)",
-              WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
-            }}>습관 스티커북</div>
-            <div style={{ fontSize:11, color:t.textSub, marginTop:2 }}>66일 완성 프로젝트</div>
+            <div style={{ fontSize:21, fontWeight:900, letterSpacing:"-0.5px", background:"linear-gradient(90deg,#FFB800,#FF6B35,#B06EFF)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>데일리 루틴</div>
+            <div style={{ fontSize:10, color:T.textSub, marginTop:2 }}>습관 + 할일 기록</div>
           </div>
-          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-            {allDone && (
-              <div style={{
-                background:"linear-gradient(135deg, #FFB800, #FF6B35)",
-                borderRadius:20, padding:"6px 12px",
-                fontSize:11, fontWeight:800, color:"#fff",
-                animation:"float 2s ease-in-out infinite",
-                boxShadow:"0 4px 20px #FFB80066",
-              }}>🏆 완벽한 하루!</div>
-            )}
-            {/* 테마 토글 - 항상 표시 */}
-            <button onClick={() => setIsDark(!isDark)} style={{
-              width:56, height:30,
-              background: isDark ? "#2A2A40" : "#E8DFD0",
-              border:`2px solid ${isDark ? "#4A4A70" : "#C8B89A"}`,
-              borderRadius:20, cursor:"pointer", position:"relative",
-              transition:"background 0.3s, border 0.3s", flexShrink:0,
-              padding:0,
-            }}>
-              <div style={{
-                position:"absolute", top:3,
-                left: isDark ? 27 : 3,
-                width:20, height:20, borderRadius:"50%",
-                background: isDark ? "#6B6B99" : "#FFF8E8",
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:12, boxShadow:"0 1px 4px rgba(0,0,0,0.3)",
-                transition:"left 0.25s cubic-bezier(0.34,1.56,0.64,1)",
-              }}>{isDark ? "🌙" : "☀️"}</div>
-            </button>
-          </div>
+          <button onClick={()=>setIsDark(!isDark)} style={{ background:T.cardBg, border:`1px solid ${T.border}`, borderRadius:20, padding:"5px 14px", fontSize:11, color:T.textSub, cursor:"pointer", marginTop:4 }}>
+            {isDark ? "☀️ 라이트" : "🌙 다크"}
+          </button>
         </div>
-
-        <div style={{ display:"flex", gap:0 }}>
-          {[["today","오늘"],["book","스티커북"],["edit","편집"]].map(([id,label]) => (
-            <button key={id} onClick={() => setView(id)} style={{
-              background:"none", border:"none",
-              color: view===id ? "#FFB800" : t.tabInactive,
-              fontWeight:700, fontSize:13, padding:"10px 18px 12px",
-              borderBottom: view===id ? "2px solid #FFB800" : "2px solid transparent",
-              cursor:"pointer",
+        <div style={{ display:"flex" }}>
+          {[["today","오늘"],["calendar","달력"],["edit","편집"]].map(([id,label]) => (
+            <button key={id} onClick={()=>setTab(id)} style={{
+              background:"none", border:"none", fontWeight:700, fontSize:13,
+              padding:"8px 18px 12px", cursor:"pointer",
+              color: tab===id ? "#FFB800" : T.tabOff,
+              borderBottom: tab===id ? "2px solid #FFB800" : "2px solid transparent",
+              transition:"all 0.2s",
             }}>{label}</button>
           ))}
         </div>
       </div>
 
-      {/* TODAY */}
-      {view==="today" && (
-        <div style={{ padding:"20px 20px 24px" }}>
-          {/* 날짜 네비게이터 */}
-          <div style={{
-            display:"flex", alignItems:"center", justifyContent:"space-between",
-            marginBottom:16, background:t.surface,
-            borderRadius:14, padding:"10px 14px",
-            border:`1px solid ${t.border}`,
-          }}>
-            <button onClick={() => setViewDate(shiftDate(viewDate,-1))} style={{
-              background:"none", border:"none", color:t.textSub,
-              fontSize:18, cursor:"pointer", padding:"0 4px", lineHeight:1,
-            }}>‹</button>
-            <div style={{ textAlign:"center" }}>
-              <div style={{ fontSize:14, fontWeight:800, color:t.text }}>{fmtDate(viewDate)}</div>
-              <div style={{ fontSize:10, color:t.textSub, marginTop:1 }}>
-                {habits.filter(h=>isCheckedToday(h.id)).length}/{habits.length}개 완료
-                {!isToday && <span style={{ color:"#FFB800", marginLeft:6 }}>· 소급 수정 중</span>}
+      {/* ══════════ 오늘 탭 ══════════ */}
+      {tab==="today" && (
+        <div style={{ padding:"14px 16px" }}>
+
+          {/* 날짜 바 */}
+          <div style={{ ...card, display:"flex", justifyContent:"space-between", alignItems:"center", padding:"11px 16px", marginBottom:14 }}>
+            <button onClick={()=>setViewDate(shiftDate(viewDate,-1))} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 4px" }}>‹</button>
+            <div style={{ textAlign:"center", cursor:"pointer" }} onClick={goCalendar}>
+              <div style={{ fontSize:15, fontWeight:900, color:T.text }}>{fmtDate(viewDate)}</div>
+              <div style={{ fontSize:10, color:T.textSub, marginTop:2 }}>
+                {(checks[viewDate]||[]).length}/{habits.length}개 완료
+                {viewDate!==TODAY && <span style={{ color:"#FFB800", marginLeft:6 }}>· 소급 수정 중</span>}
               </div>
             </div>
-            <button
-              onClick={() => { if (!isToday) setViewDate(shiftDate(viewDate,1)); }}
-              style={{
-                background:"none", border:"none",
-                color: isToday ? t.border : t.textSub,
-                fontSize:18, cursor: isToday ? "default" : "pointer", padding:"0 4px", lineHeight:1,
-              }}>›</button>
+            {viewDate === TODAY
+              ? <div style={{ background:"linear-gradient(135deg,#FFB800,#FF6B35)", borderRadius:10, padding:"4px 12px", fontSize:10, fontWeight:800, color:"#fff" }}>오늘</div>
+              : <button onClick={()=>setViewDate(shiftDate(viewDate,1))} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 4px" }}>›</button>
+            }
           </div>
-          <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-            {habits.map(habit => {
-              const done = isCheckedToday(habit.id);
-              const total = getTotalDone(habit.id);
-              const streak = getStreak(habit.id);
-              const pct = Math.min((total/TOTAL)*100, 100);
-              const isNew = newStamp === habit.id;
+
+          {/* 블록 */}
+          {BLOCKS.map(b => {
+            const blockHabits = habits.filter(h=>h.block===b.id);
+            const blockTodos  = todos[b.id] || [];
+            const dayChecks   = checks[viewDate] || [];
+            return (
+              <div key={b.id} style={{ background:b.bg, border:`1px solid ${b.border}`, borderRadius:14, marginBottom:10, overflow:"hidden" }}>
+                {/* 블록 헤더 */}
+                <div style={{ display:"flex", alignItems:"center", gap:8, padding:"9px 14px" }}>
+                  <div style={{ width:7, height:7, borderRadius:"50%", background:b.color, flexShrink:0 }}/>
+                  <div style={{ fontSize:12, fontWeight:800, color:b.color }}>{b.label}</div>
+                  <div style={{ fontSize:10, color:b.color, opacity:0.5, marginLeft:"auto" }}>{b.time}</div>
+                </div>
+
+                {/* 습관 rows */}
+                {blockHabits.map(h => {
+                  const done = dayChecks.includes(h.id);
+                  return (
+                    <div key={h.id} onClick={()=>toggleHabit(h.id)} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px", borderTop:`1px solid ${T.rowLine}`, cursor:"pointer" }}>
+                      <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border: done?`2px solid ${h.color}`:`2px dashed ${h.color}55`, background: done?`${h.color}22`:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:h.color, transition:"all 0.2s" }}>
+                        {done && "✓"}
+                      </div>
+                      <div style={{ fontSize:12, flex:1, color:T.text, textDecoration:done?"line-through":"none", opacity:done?0.38:1, transition:"all 0.2s" }}>{h.name}</div>
+                      <div style={{ fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:8, background:`${h.color}18`, color:h.color, flexShrink:0 }}>{h.sticker} 습관</div>
+                    </div>
+                  );
+                })}
+
+                {/* 할일 rows */}
+                {blockTodos.map((todo,i) => {
+                  const k = `${viewDate}-${b.id}-${i}`;
+                  const done = !!todoDone[k];
+                  return (
+                    <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px", borderTop:`1px solid ${T.rowLine}` }}>
+                      <div onClick={()=>toggleTodo(b.id,i)} style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border: done?"2px solid #888":"2px dashed rgba(128,128,128,0.35)", background: done?"rgba(128,128,128,0.15)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#888", cursor:"pointer", transition:"all 0.2s" }}>
+                        {done && "✓"}
+                      </div>
+                      <div onClick={()=>toggleTodo(b.id,i)} style={{ fontSize:12, flex:1, color:T.text, textDecoration:done?"line-through":"none", opacity:done?0.38:1, cursor:"pointer", transition:"all 0.2s" }}>{todo}</div>
+                      <div style={{ fontSize:10, fontWeight:600, padding:"2px 8px", borderRadius:8, background:T.todoTag, color:T.todoTagTxt, flexShrink:0 }}>할일</div>
+                      <button onClick={()=>removeTodo(b.id,i)} style={{ background:"none", border:"none", color:"rgba(232,93,63,0.4)", fontSize:14, cursor:"pointer", padding:"0 2px", lineHeight:1 }}>✕</button>
+                    </div>
+                  );
+                })}
+
+                {/* 추가 */}
+                {addingIn===b.id ? (
+                  <div style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px", borderTop:`1px solid ${T.rowLine}` }}>
+                    <div style={{ width:22, height:22, borderRadius:"50%", border:"2px dashed rgba(128,128,128,0.3)", flexShrink:0 }}/>
+                    <input ref={inputRef} value={newTxt} onChange={e=>setNewTxt(e.target.value)}
+                      onKeyDown={e=>{ if(e.key==="Enter") addTodo(b.id); if(e.key==="Escape"){setAddingIn(null);setNewTxt("");} }}
+                      onBlur={()=>addTodo(b.id)}
+                      placeholder="할일 입력 후 Enter"
+                      style={{ flex:1, background:"transparent", border:"none", outline:"none", fontSize:12, color:T.text }}
+                    />
+                  </div>
+                ) : (
+                  <div onClick={()=>setAddingIn(b.id)} style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 14px", borderTop:`1px solid ${T.rowLine}`, cursor:"pointer" }}>
+                    <span style={{ fontSize:16, color:b.color, opacity:0.45 }}>+</span>
+                    <span style={{ fontSize:11, color:T.addTxt }}>할일 추가</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ══════════ 달력 탭 ══════════ */}
+      {tab==="calendar" && (
+        <div style={{ padding:"14px 16px" }}>
+
+          {/* 월 네비 */}
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+            <button onClick={()=>setCalMonth(p=>{ const d=new Date(p.y,p.m-1,1); return {y:d.getFullYear(),m:d.getMonth()}; })} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 6px" }}>‹</button>
+            <div style={{ fontSize:15, fontWeight:800, color:T.text }}>{calMonth.y}년 {calMonth.m+1}월</div>
+            <button onClick={()=>setCalMonth(p=>{ const d=new Date(p.y,p.m+1,1); return {y:d.getFullYear(),m:d.getMonth()}; })} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 6px" }}>›</button>
+          </div>
+
+          {/* 요일 */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", marginBottom:4 }}>
+            {DAYS_KO.map(d => <div key={d} style={{ textAlign:"center", fontSize:10, fontWeight:700, color:T.textSub, padding:"3px 0" }}>{d}</div>)}
+          </div>
+
+          {/* 날짜 */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:3 }}>
+            {Array.from({length: firstDow(calMonth.y, calMonth.m)}, (_,i) => <div key={"e"+i}/>)}
+            {Array.from({length: daysInMonth(calMonth.y, calMonth.m)}, (_,i) => {
+              const d = i+1;
+              const dStr = calDateStr(d);
+              const dayChecks = checks[dStr] || [];
+              const isToday = dStr === TODAY;
+              const isSel   = d === calDay && calMonth.y===new Date(calDateStr(calDay)).getFullYear();
               return (
-                <div key={habit.id} onClick={(e) => handleCheck(habit,e)} style={{
-                  background: done ? `linear-gradient(135deg, ${habit.color}${t.doneBg}, ${habit.color}08)` : t.surface,
-                  border:`1px solid ${done ? habit.color+"55" : t.border}`,
-                  borderRadius:18, padding:"18px 18px 16px",
-                  cursor:"pointer", transition:"all 0.2s",
-                  position:"relative", overflow:"hidden",
-                  boxShadow: done ? `0 2px 20px ${habit.color}22` : "none",
+                <div key={d} onClick={()=>setCalDay(d)} style={{
+                  display:"flex", flexDirection:"column", alignItems:"center",
+                  padding:"5px 2px", borderRadius:10, cursor:"pointer",
+                  background: isSel ? "rgba(255,184,0,0.14)" : T.calHover,
+                  border: isSel ? "1.5px solid rgba(255,184,0,0.5)" : "1.5px solid transparent",
+                  transition:"all 0.15s",
                 }}>
-                  {done && <div style={{
-                    position:"absolute", inset:0,
-                    background:`radial-gradient(ellipse at 50% 0%, ${habit.color}14, transparent 70%)`,
-                    pointerEvents:"none",
-                  }} />}
-                  <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-                    <div style={{
-                      width:56, height:56, flexShrink:0,
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      background: done ? `radial-gradient(circle at 35% 35%, ${habit.color}FF, ${habit.color}88)` : t.stickerEmpty,
-                      borderRadius:"50%", fontSize:26,
-                      boxShadow: done ? `0 4px 20px ${habit.color}66, inset 0 1px 3px rgba(255,255,255,0.3)` : "none",
-                      border: done ? `2px solid ${habit.color}AA` : `2px dashed ${t.stickerEmptyBorder}`,
-                      animation: isNew ? "stamp 0.5s cubic-bezier(0.34,1.56,0.64,1)" : "none",
-                      position:"relative", overflow:"hidden", transition:"all 0.3s",
-                    }}>
-                      {done ? habit.sticker : <span style={{opacity:0.2}}>{habit.sticker}</span>}
-                      {done && <div style={{
-                        position:"absolute", top:"10%", left:"18%", width:"35%", height:"18%",
-                        background:"rgba(255,255,255,0.45)", borderRadius:"50%", transform:"rotate(-25deg)",
-                      }} />}
-                    </div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
-                        <span style={{ fontSize:15, fontWeight:700, color: done ? t.text : t.textSub }}>{habit.name}</span>
-                      </div>
-                      <div style={{ height:6, background:t.progressTrack, borderRadius:10, overflow:"hidden", marginBottom:6 }}>
-                        <div style={{
-                          height:"100%", width:`${pct}%`,
-                          background: total>=TOTAL ? `linear-gradient(90deg, ${habit.color}, #FFB800)` : habit.color,
-                          borderRadius:10, transition:"width 0.5s cubic-bezier(0.34,1.56,0.64,1)",
-                          boxShadow:`0 0 8px ${habit.color}88`,
-                        }} />
-                      </div>
-                      <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-                        <span style={{ fontSize:11, color:habit.color, fontWeight:700 }}>{total}/{TOTAL}개</span>
-                        {streak>0 && <span style={{ fontSize:10, color:t.textSub }}>🔥 {streak}일 연속</span>}
-                        {total>=TOTAL && (
-                          <span style={{
-                            fontSize:10, fontWeight:800,
-                            background:"linear-gradient(90deg, #FFB800, #FF6B35)",
-                            WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
-                          }}>★ 66일 달성!</span>
-                        )}
-                      </div>
-                    </div>
+                  <div style={{ fontSize:11, fontWeight:700, width:22, height:22, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", background:isToday?"#FFB800":"transparent", color:isToday?"#fff":T.text }}>
+                    {d}
+                  </div>
+                  <div style={{ display:"flex", gap:2, marginTop:3, height:5, alignItems:"center" }}>
+                    {dayChecks.length > 0
+                      ? habits.filter(h=>dayChecks.includes(h.id)).map(h=>(
+                          <div key={h.id} style={{ width:4, height:4, borderRadius:"50%", background:h.color }}/>
+                        ))
+                      : <div style={{ width:4, height:4, borderRadius:"50%", background:T.emptyDot }}/>
+                    }
                   </div>
                 </div>
               );
             })}
           </div>
+
+          {/* 선택된 날 상세 */}
+          {(() => {
+            const dStr = calDateStr(calDay);
+            const dayChecks = checks[dStr] || [];
+            const dayTodoDone = Object.keys(todoDone).filter(k=>k.startsWith(dStr)&&todoDone[k]).length;
+            const isToday = dStr === TODAY;
+            const totalTodos = Object.values(todos).flat().length;
+            return (
+              <div style={{ ...card, marginTop:14, padding:"14px 16px" }}>
+                <div style={{ fontSize:13, fontWeight:800, color:T.text, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+                  📅 {fmtShort(dStr)}
+                  {isToday && <span style={{ fontSize:10, background:"linear-gradient(135deg,#FFB800,#FF6B35)", color:"#fff", borderRadius:8, padding:"2px 8px", fontWeight:800 }}>오늘</span>}
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:14 }}>
+                  {habits.map(h => {
+                    const done = dayChecks.includes(h.id);
+                    return (
+                      <div key={h.id} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                        <div style={{ width:18, height:18, borderRadius:"50%", border: done?`2px solid ${h.color}`:`2px dashed ${h.color}44`, background: done?`${h.color}22`:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:h.color, flexShrink:0 }}>
+                          {done&&"✓"}
+                        </div>
+                        <div style={{ fontSize:12, flex:1, color:T.text, textDecoration:done?"line-through":"none", opacity:done?0.4:0.85 }}>{h.name}</div>
+                        <div style={{ fontSize:11 }}>{h.sticker}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* 통계 */}
+                <div style={{ display:"flex", gap:8 }}>
+                  {[
+                    { val:`${dayChecks.length}/${habits.length}`, label:"습관 완료", c:"#FFB800" },
+                    { val:`${dayTodoDone}/${totalTodos}`, label:"할일 완료", c:"#4A9EFF" },
+                    { val: dayChecks.length===habits.length?"🏆 완벽":"💪 "+Math.round(dayChecks.length/habits.length*100)+"%", label:"달성률", c:"#2DCB73" },
+                  ].map(({val,label,c}) => (
+                    <div key={label} style={{ flex:1, background:T.statBg, border:`1px solid ${T.border}`, borderRadius:10, padding:"8px 6px", textAlign:"center" }}>
+                      <div style={{ fontSize:13, fontWeight:900, color:c }}>{val}</div>
+                      <div style={{ fontSize:9, color:T.textSub, marginTop:2 }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
 
-      {/* 스티커북 */}
-      {view==="book" && (
-        <div style={{ padding:"20px 16px" }}>
-          {/* 전체 요약 그리드 */}
-          {!selectedHabit ? (
-            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-              {habits.map(h => {
-                const total = getTotalDone(h.id);
-                const pct = Math.min((total/TOTAL)*100, 100);
-                const grid = get66Data(h.id);
-                return (
-                  <div key={h.id} onClick={() => setSelectedHabit(h.id)} style={{
-                    background:t.bookCard, border:`1px solid ${h.color}33`,
-                    borderRadius:16, padding:"14px 16px",
-                    cursor:"pointer",
-                    boxShadow:`0 4px 20px ${h.color}11`,
-                    transition:"all 0.2s",
-                  }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                        <div style={{
-                          width:32, height:32, borderRadius:"50%",
-                          background:`radial-gradient(circle at 35% 35%, ${h.color}FF, ${h.color}88)`,
-                          display:"flex", alignItems:"center", justifyContent:"center",
-                          fontSize:16, boxShadow:`0 2px 8px ${h.color}55`,
-                          border:`1.5px solid ${h.color}AA`, flexShrink:0,
-                        }}>{h.sticker}</div>
-                        <div>
-                          <div style={{ fontSize:13, fontWeight:800, color:t.text }}>{h.name}</div>
-                          <div style={{ fontSize:10, color:t.textSub }}>{total}개 · {Math.round(pct)}%</div>
-                        </div>
-                      </div>
-                      <div style={{ fontSize:10, color:h.color, fontWeight:700 }}>
-                        {total>=TOTAL ? "★ 완성!" : `${TOTAL-total}개 남음`}
-                      </div>
-                    </div>
-                    {/* 미니 66칸 그리드 */}
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(11, 1fr)", gap:3 }}>
-                      {grid.map((cell,i) => (
-                        <div key={i} style={{
-                          width:"100%", aspectRatio:"1", borderRadius:"50%",
-                          background: cell.state==="done"
-                            ? `radial-gradient(circle at 35% 35%, ${h.color}FF, ${h.color}88)`
-                            : cell.state==="future" ? "rgba(255,255,255,0.01)" : t.stickerEmpty,
-                          border: cell.state==="done" ? `1px solid ${h.color}CC`
-                            : `1px dashed ${cell.state==="future" ? "rgba(255,255,255,0.03)" : t.stickerEmptyBorder}`,
-                        }} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+      {/* ══════════ 편집 탭 ══════════ */}
+      {tab==="edit" && (
+        <div style={{ padding:"14px 16px" }}>
+          {editHabit ? (
+            /* 습관 편집 */
+            <div>
+              <button onClick={()=>setEditHabit(null)} style={{ background:"none", border:"none", color:T.textSub, fontSize:13, cursor:"pointer", marginBottom:14, padding:0, display:"flex", alignItems:"center", gap:4 }}>‹ 목록으로</button>
+              <div style={{ ...card, padding:"18px 16px" }}>
+                <div style={{ fontSize:14, fontWeight:800, color:T.text, marginBottom:16 }}>습관 편집</div>
+
+                {/* 스티커 선택 */}
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
+                  {STICKER_OPTIONS.map(s => (
+                    <span key={s} onClick={()=>setEditHabit({...editHabit,sticker:s})} style={{ fontSize:22, cursor:"pointer", opacity:editHabit.sticker===s?1:0.3, transform:editHabit.sticker===s?"scale(1.3)":"scale(1)", transition:"all 0.15s" }}>{s}</span>
+                  ))}
+                </div>
+
+                {/* 이름 */}
+                <input value={editHabit.name} onChange={e=>setEditHabit({...editHabit,name:e.target.value})}
+                  style={{ width:"100%", background:T.inputBg, border:`1px solid ${T.border}`, borderRadius:10, padding:"10px 14px", color:T.text, fontSize:14, outline:"none", marginBottom:14 }}
+                />
+
+                {/* 색상 */}
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
+                  {COLOR_OPTIONS.map(c => (
+                    <div key={c} onClick={()=>setEditHabit({...editHabit,color:c})} style={{ width:28, height:28, borderRadius:"50%", background:`radial-gradient(circle at 35% 35%,${c},${c}88)`, cursor:"pointer", border:editHabit.color===c?"3px solid #888":"3px solid transparent", boxSizing:"border-box", boxShadow:editHabit.color===c?`0 0 12px ${c}`:"none", transition:"all 0.15s" }}/>
+                  ))}
+                </div>
+
+                {/* 시간대 */}
+                <div style={{ fontSize:11, color:T.textSub, marginBottom:8 }}>시간대</div>
+                <div style={{ display:"flex", gap:8, marginBottom:20 }}>
+                  {BLOCKS.map(b => (
+                    <button key={b.id} onClick={()=>setEditHabit({...editHabit,block:b.id})} style={{ flex:1, padding:"8px 4px", border:`1.5px solid ${editHabit.block===b.id?b.color:T.border}`, borderRadius:10, background:editHabit.block===b.id?`${b.color}18`:"transparent", color:editHabit.block===b.id?b.color:T.textSub, fontSize:12, fontWeight:700, cursor:"pointer" }}>{b.label}</button>
+                  ))}
+                </div>
+
+                <button onClick={()=>{
+                  setHabits(habits.map(h=>h.id===editHabit.id?editHabit:h));
+                  setEditHabit(null);
+                }} style={{ width:"100%", background:"linear-gradient(135deg,#FFB800,#FF6B35)", border:"none", color:"#fff", borderRadius:12, padding:13, fontSize:14, fontWeight:800, cursor:"pointer" }}>저장</button>
+              </div>
             </div>
           ) : (
-            /* 상세 뷰 */
-            (() => {
-              const habit = habits.find(h => h.id===selectedHabit) || habits[0];
-              if (!habit) return null;
-              const grid = get66Data(habit.id);
-              const total = getTotalDone(habit.id);
-              const pct = Math.min((total/TOTAL)*100, 100);
-              return (
-                <div>
-                  <button onClick={() => setSelectedHabit(null)} style={{
-                    background:"none", border:"none", color:t.textSub,
-                    fontSize:13, cursor:"pointer", marginBottom:14,
-                    display:"flex", alignItems:"center", gap:4, padding:0,
-                  }}>‹ 전체 보기</button>
-                  <div style={{
-                    background:t.bookCard, border:`1px solid ${habit.color}33`,
-                    borderRadius:20, padding:"20px 16px",
-                    boxShadow:`0 8px 40px ${habit.color}22`,
-                  }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-                      <div>
-                        <div style={{ fontSize:16, fontWeight:800, color:t.text }}>{habit.name}</div>
-                        <div style={{ fontSize:11, color:t.textSub, marginTop:2 }}>
-                          {total}개 모음 · {TOTAL-total}개 남음
-                        </div>
-                      </div>
-                      <div style={{
-                        fontSize:28,
-                        background:`radial-gradient(circle at 35% 35%, ${habit.color}FF, ${habit.color}88)`,
-                        width:48, height:48, borderRadius:"50%",
-                        display:"flex", alignItems:"center", justifyContent:"center",
-                        boxShadow:`0 4px 16px ${habit.color}66`,
-                        border:`2px solid ${habit.color}AA`, flexShrink:0,
-                      }}>{habit.sticker}</div>
+            <div>
+              {habits.map((h,idx) => (
+                <div key={h.id} style={{ ...card, padding:"13px 16px", marginBottom:8, display:"flex", alignItems:"center", gap:12 }}>
+                  <div style={{ width:36, height:36, borderRadius:"50%", background:`${h.color}22`, border:`1.5px solid ${h.color}55`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>{h.sticker}</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:T.text }}>{h.name}</div>
+                    <div style={{ fontSize:10, color:T.textSub, marginTop:2 }}>
+                      {BLOCKS.find(b=>b.id===h.block)?.label} · {Object.values(checks).filter(arr=>arr.includes(h.id)).length}회 기록
                     </div>
-                    <div style={{ marginBottom:16 }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-                        <span style={{ fontSize:11, color:t.textSub }}>진행률</span>
-                        <span style={{ fontSize:11, fontWeight:700, color:habit.color }}>{Math.round(pct)}%</span>
-                      </div>
-                      <div style={{ height:8, background:t.progressTrack, borderRadius:10, overflow:"hidden" }}>
-                        <div style={{
-                          height:"100%", width:`${pct}%`,
-                          background:`linear-gradient(90deg, ${habit.color}, ${habit.color}CC)`,
-                          borderRadius:10, transition:"width 0.5s",
-                          boxShadow:`0 0 12px ${habit.color}88`,
-                        }} />
-                      </div>
-                    </div>
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(11, 1fr)", gap:5 }}>
-                      {grid.map((cell,i) => (
-                        <div key={i} style={{
-                          width:"100%", aspectRatio:"1",
-                          background: cell.state==="done"
-                            ? `radial-gradient(circle at 35% 35%, ${habit.color}FF, ${habit.color}99)`
-                            : cell.state==="future" ? "rgba(255,255,255,0.02)" : t.stickerEmpty,
-                          borderRadius:"50%",
-                          border: cell.state==="done" ? `1.5px solid ${habit.color}CC`
-                            : `1.5px dashed ${cell.state==="future" ? "rgba(255,255,255,0.05)" : t.stickerEmptyBorder}`,
-                          display:"flex", alignItems:"center", justifyContent:"center",
-                          fontSize:"clamp(7px, 2vw, 10px)",
-                          color: cell.state==="done" ? "transparent" : cell.state==="future" ? "rgba(255,255,255,0.04)" : t.stickerEmptyNum,
-                          position:"relative",
-                        }}>
-                          {cell.state==="done" ? (
-                            <>
-                              <span style={{ fontSize:"clamp(10px,3vw,16px)" }}>{habit.sticker}</span>
-                              <div style={{ position:"absolute", top:"15%", left:"20%", width:"30%", height:"15%",
-                                background:"rgba(255,255,255,0.5)", borderRadius:"50%", transform:"rotate(-30deg)" }} />
-                            </>
-                          ) : i+1}
-                        </div>
-                      ))}
-                    </div>
-                    {total>=TOTAL && (
-                      <div style={{
-                        marginTop:16, textAlign:"center", padding:"12px",
-                        background:`linear-gradient(135deg, ${habit.color}22, transparent)`,
-                        borderRadius:12, border:`1px solid ${habit.color}44`,
-                      }}>
-                        <div style={{fontSize:24}}>🏆</div>
-                        <div style={{
-                          fontSize:13, fontWeight:900, marginTop:4,
-                          background:"linear-gradient(90deg, #FFB800, #FF6B35)",
-                          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
-                        }}>66일 완성! 습관이 됐어요 🎉</div>
-                      </div>
-                    )}
+                  </div>
+                  <div style={{ display:"flex", gap:4 }}>
+                    <button onClick={()=>{ if(idx===0)return; const a=[...habits];[a[idx-1],a[idx]]=[a[idx],a[idx-1]];setHabits(a); }} style={{ background:"none", border:`1px solid ${T.border}`, color:idx===0?T.border:T.textSub, borderRadius:8, padding:"4px 8px", fontSize:12, cursor:idx===0?"default":"pointer" }}>↑</button>
+                    <button onClick={()=>{ if(idx===habits.length-1)return; const a=[...habits];[a[idx],a[idx+1]]=[a[idx+1],a[idx]];setHabits(a); }} style={{ background:"none", border:`1px solid ${T.border}`, color:idx===habits.length-1?T.border:T.textSub, borderRadius:8, padding:"4px 8px", fontSize:12, cursor:idx===habits.length-1?"default":"pointer" }}>↓</button>
+                    <button onClick={()=>setEditHabit({...h})} style={{ background:"none", border:`1px solid ${T.border}`, color:T.textSub, borderRadius:8, padding:"4px 10px", fontSize:11, cursor:"pointer" }}>편집</button>
+                    {habits.length>1 && <button onClick={()=>setHabits(habits.filter(x=>x.id!==h.id))} style={{ background:"none", border:"none", color:"#E85D3F88", fontSize:16, cursor:"pointer" }}>✕</button>}
                   </div>
                 </div>
-              );
-            })()
-          )}
-        </div>
-      )}
+              ))}
 
-            {/* EDIT */}
-      {view==="edit" && (
-        <div style={{ padding:"20px 16px" }}>
-          {habits.map((habit,idx) => (
-            <div key={habit.id} style={{
-              background:t.surface, border:`1px solid ${t.border}`,
-              borderRadius:14, padding:"14px 16px", marginBottom:10,
-              display:"flex", alignItems:"center", gap:12,
-            }}>
-              <div style={{
-                width:36, height:36, borderRadius:"50%",
-                background:`radial-gradient(circle at 35% 35%, ${habit.color}, ${habit.color}88)`,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:18, flexShrink:0, boxShadow:`0 2px 10px ${habit.color}55`,
-              }}>{habit.sticker}</div>
-              <div style={{flex:1}}>
-                <div style={{ fontSize:13, fontWeight:700, color:t.text }}>{habit.name}</div>
-                <div style={{ fontSize:11, color:t.textSub }}>{getTotalDone(habit.id)}/{TOTAL}</div>
+              {/* 새 습관 추가 */}
+              <div style={{ ...card, padding:"16px", marginTop:6 }}>
+                <div style={{ fontSize:12, color:T.textSub, fontWeight:700, marginBottom:12 }}>+ 새 습관</div>
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:12 }}>
+                  {STICKER_OPTIONS.map(s => (
+                    <span key={s} onClick={()=>setNewHabit({...newHabit,sticker:s})} style={{ fontSize:20, cursor:"pointer", opacity:newHabit.sticker===s?1:0.3, transform:newHabit.sticker===s?"scale(1.3)":"scale(1)", transition:"all 0.15s" }}>{s}</span>
+                  ))}
+                </div>
+                <input placeholder="습관 이름 입력" value={newHabit.name} onChange={e=>setNewHabit({...newHabit,name:e.target.value})}
+                  style={{ width:"100%", background:T.inputBg, border:`1px solid ${T.border}`, borderRadius:10, padding:"10px 14px", color:T.text, fontSize:14, outline:"none", marginBottom:12 }}
+                />
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:12 }}>
+                  {COLOR_OPTIONS.map(c => (
+                    <div key={c} onClick={()=>setNewHabit({...newHabit,color:c})} style={{ width:28, height:28, borderRadius:"50%", background:`radial-gradient(circle at 35% 35%,${c},${c}88)`, cursor:"pointer", border:newHabit.color===c?"3px solid #888":"3px solid transparent", boxSizing:"border-box", boxShadow:newHabit.color===c?`0 0 12px ${c}`:"none", transition:"all 0.15s" }}/>
+                  ))}
+                </div>
+                <div style={{ fontSize:11, color:T.textSub, marginBottom:8 }}>시간대</div>
+                <div style={{ display:"flex", gap:8, marginBottom:16 }}>
+                  {BLOCKS.map(b => (
+                    <button key={b.id} onClick={()=>setNewHabit({...newHabit,block:b.id})} style={{ flex:1, padding:"7px 4px", border:`1.5px solid ${newHabit.block===b.id?b.color:T.border}`, borderRadius:10, background:newHabit.block===b.id?`${b.color}18`:"transparent", color:newHabit.block===b.id?b.color:T.textSub, fontSize:12, fontWeight:700, cursor:"pointer" }}>{b.label}</button>
+                  ))}
+                </div>
+                <button onClick={()=>{
+                  if(!newHabit.name.trim())return;
+                  setHabits([...habits,{id:Date.now(),...newHabit}]);
+                  setNewHabit({name:"",sticker:"⭐",color:"#FFB800",block:"morning"});
+                }} style={{ width:"100%", background:"linear-gradient(135deg,#FFB800,#FF6B35)", border:"none", color:"#fff", borderRadius:12, padding:13, fontSize:14, fontWeight:800, cursor:"pointer", boxShadow:"0 4px 20px #FFB80044" }}>
+                  추가하기 ✨
+                </button>
               </div>
-              <div style={{ display:"flex", gap:4 }}>
-                <button onClick={() => {
-                  if (idx===0) return;
-                  const a=[...habits]; [a[idx-1],a[idx]]=[a[idx],a[idx-1]]; setHabits(a);
-                }} style={{
-                  background:t.surface, border:`1px solid ${t.border}`,
-                  color: idx===0 ? t.border : t.textSub,
-                  borderRadius:8, padding:"5px 8px", fontSize:13, cursor: idx===0 ? "default" : "pointer",
-                }}>↑</button>
-                <button onClick={() => {
-                  if (idx===habits.length-1) return;
-                  const a=[...habits]; [a[idx],a[idx+1]]=[a[idx+1],a[idx]]; setHabits(a);
-                }} style={{
-                  background:t.surface, border:`1px solid ${t.border}`,
-                  color: idx===habits.length-1 ? t.border : t.textSub,
-                  borderRadius:8, padding:"5px 8px", fontSize:13, cursor: idx===habits.length-1 ? "default" : "pointer",
-                }}>↓</button>
-                <button onClick={() => setEditHabit({...habit,idx})} style={{
-                  background:t.surface, border:`1px solid ${t.border}`,
-                  color:t.textSub, borderRadius:8, padding:"5px 12px", fontSize:11, cursor:"pointer",
-                }}>편집</button>
-                {habits.length>1 && (
-                  <button onClick={() => setHabits(habits.filter((_,i)=>i!==idx))} style={{
-                    background:"none", border:"none", color:"#E85D3F88", fontSize:16, cursor:"pointer",
-                  }}>✕</button>
-                )}
-              </div>
-            </div>
-          ))}
-          {habits.length<5 && (
-            <div style={{
-              background:t.surface, border:`1px dashed ${t.dashed}`,
-              borderRadius:14, padding:18, marginTop:6,
-            }}>
-              <div style={{ fontSize:12, color:t.textSub, fontWeight:700, marginBottom:14 }}>+ 새 습관</div>
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:12 }}>
-                {STICKER_OPTIONS.map(s => (
-                  <span key={s} onClick={() => setNewHabit({...newHabit,sticker:s})} style={{
-                    fontSize:20, cursor:"pointer",
-                    opacity: newHabit.sticker===s ? 1 : 0.3,
-                    transform: newHabit.sticker===s ? "scale(1.3)" : "scale(1)",
-                    transition:"all 0.15s",
-                  }}>{s}</span>
-                ))}
-              </div>
-              <input placeholder="습관 이름 (예: 물 2L 마시기)"
-                value={newHabit.name}
-                onChange={e => setNewHabit({...newHabit,name:e.target.value})}
-                style={{ ...inputStyle, marginBottom:12 }} />
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
-                {COLOR_OPTIONS.map(c => (
-                  <div key={c} onClick={() => setNewHabit({...newHabit,color:c})} style={{
-                    width:28, height:28, borderRadius:"50%",
-                    background:`radial-gradient(circle at 35% 35%, ${c}, ${c}88)`,
-                    cursor:"pointer",
-                    border: newHabit.color===c ? "3px solid #888" : "3px solid transparent",
-                    boxSizing:"border-box",
-                    boxShadow: newHabit.color===c ? `0 0 12px ${c}` : "none",
-                    transition:"all 0.15s",
-                  }} />
-                ))}
-              </div>
-              <button onClick={() => {
-                if (!newHabit.name.trim()) return;
-                setHabits([...habits, { id:Date.now(), ...newHabit }]);
-                setNewHabit({ name:"", sticker:"⭐", color:"#FFB800" });
-              }} style={{
-                width:"100%",
-                background:"linear-gradient(135deg, #FFB800, #FF6B35)",
-                border:"none", color:"#fff", borderRadius:12,
-                padding:14, fontSize:14, fontWeight:800, cursor:"pointer",
-                boxShadow:"0 4px 20px #FFB80066",
-              }}>스티커 추가하기 ✨</button>
             </div>
           )}
-        </div>
-      )}
-
-      {editHabit && (
-        <div style={{
-          position:"fixed", inset:0, background:t.overlay, zIndex:300,
-          display:"flex", alignItems:"flex-end",
-        }} onClick={e => e.target===e.currentTarget && setEditHabit(null)}>
-          <div style={{
-            background:t.modalBg, borderRadius:"24px 24px 0 0",
-            padding:"24px 20px 48px", width:"100%", boxSizing:"border-box",
-            border:`1px solid ${t.border}`,
-          }}>
-            <div style={{ fontSize:15, fontWeight:800, marginBottom:16, color:t.text }}>습관 편집</div>
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
-              {STICKER_OPTIONS.map(s => (
-                <span key={s} onClick={() => setEditHabit({...editHabit,sticker:s})} style={{
-                  fontSize:22, cursor:"pointer",
-                  opacity: editHabit.sticker===s ? 1 : 0.3,
-                  transform: editHabit.sticker===s ? "scale(1.3)" : "scale(1)",
-                  transition:"all 0.15s",
-                }}>{s}</span>
-              ))}
-            </div>
-            <input value={editHabit.name}
-              onChange={e => setEditHabit({...editHabit,name:e.target.value})}
-              style={{ ...inputStyle, marginBottom:14 }} />
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:20 }}>
-              {COLOR_OPTIONS.map(c => (
-                <div key={c} onClick={() => setEditHabit({...editHabit,color:c})} style={{
-                  width:28, height:28, borderRadius:"50%",
-                  background:`radial-gradient(circle at 35% 35%, ${c}, ${c}88)`,
-                  cursor:"pointer",
-                  border: editHabit.color===c ? "3px solid #555" : "3px solid transparent",
-                  boxSizing:"border-box",
-                  boxShadow: editHabit.color===c ? `0 0 12px ${c}` : "none",
-                  transition:"all 0.15s",
-                }} />
-              ))}
-            </div>
-            <button onClick={() => {
-              setHabits(habits.map((h,i) => i===editHabit.idx
-                ? {...h, name:editHabit.name, sticker:editHabit.sticker, color:editHabit.color} : h));
-              setEditHabit(null);
-            }} style={{
-              width:"100%",
-              background:"linear-gradient(135deg, #FFB800, #FF6B35)",
-              border:"none", color:"#fff", borderRadius:12,
-              padding:14, fontSize:14, fontWeight:800, cursor:"pointer",
-            }}>저장</button>
-          </div>
         </div>
       )}
     </div>
   );
 }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<HabitSticker />);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
