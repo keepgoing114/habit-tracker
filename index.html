@@ -25,7 +25,6 @@
   <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
-/* ── 상수 ── */
 const DAYS_KO = ["일","월","화","수","목","금","토"];
 
 const DEFAULT_HABITS = [
@@ -51,45 +50,27 @@ const BLOCKS = [
 const STICKER_OPTIONS = ["⭐","🔥","💎","🌟","🍀","🌸","🎯","💫","🏆","🍭","🌈","💜","❤️","🧡","💛"];
 const COLOR_OPTIONS   = ["#FFB800","#FF6B35","#4A9EFF","#B06EFF","#2DCB73","#F06292","#E85D3F","#00BCD4"];
 
-/* ── 테마 ── */
 const THEME = {
   dark: {
-    appBg:    "#0D1220",
-    cardBg:   "rgba(255,255,255,0.05)",
-    headerBg: "#0D1220",
-    border:   "rgba(255,255,255,0.09)",
-    text:     "#F0EDE8",
-    textSub:  "rgba(255,255,255,0.38)",
-    tabOff:   "rgba(255,255,255,0.3)",
-    rowLine:  "rgba(255,255,255,0.05)",
-    addTxt:   "rgba(255,255,255,0.25)",
-    emptyDot: "rgba(255,255,255,0.07)",
-    inputBg:  "rgba(255,255,255,0.07)",
-    statBg:   "rgba(255,255,255,0.05)",
-    todoTag:  "rgba(255,255,255,0.09)",
-    todoTagTxt:"rgba(255,255,255,0.35)",
-    calHover: "rgba(255,255,255,0.05)",
+    appBg:"#0D1220", cardBg:"rgba(255,255,255,0.05)", headerBg:"#0D1220",
+    border:"rgba(255,255,255,0.09)", text:"#F0EDE8", textSub:"rgba(255,255,255,0.38)",
+    tabOff:"rgba(255,255,255,0.3)", rowLine:"rgba(255,255,255,0.05)",
+    addTxt:"rgba(255,255,255,0.25)", emptyDot:"rgba(255,255,255,0.07)",
+    inputBg:"rgba(255,255,255,0.07)", statBg:"rgba(255,255,255,0.05)",
+    todoTag:"rgba(255,255,255,0.09)", todoTagTxt:"rgba(255,255,255,0.35)",
+    calHover:"rgba(255,255,255,0.05)",
   },
   light: {
-    appBg:    "#F2F2F7",
-    cardBg:   "#FFFFFF",
-    headerBg: "#FFFFFF",
-    border:   "rgba(0,0,0,0.09)",
-    text:     "#1C1C1E",
-    textSub:  "rgba(0,0,0,0.4)",
-    tabOff:   "rgba(0,0,0,0.3)",
-    rowLine:  "rgba(0,0,0,0.05)",
-    addTxt:   "rgba(0,0,0,0.3)",
-    emptyDot: "rgba(0,0,0,0.07)",
-    inputBg:  "#F2F2F7",
-    statBg:   "#F2F2F7",
-    todoTag:  "rgba(0,0,0,0.06)",
-    todoTagTxt:"rgba(0,0,0,0.38)",
-    calHover: "rgba(0,0,0,0.04)",
+    appBg:"#F2F2F7", cardBg:"#FFFFFF", headerBg:"#FFFFFF",
+    border:"rgba(0,0,0,0.09)", text:"#1C1C1E", textSub:"rgba(0,0,0,0.4)",
+    tabOff:"rgba(0,0,0,0.3)", rowLine:"rgba(0,0,0,0.05)",
+    addTxt:"rgba(0,0,0,0.3)", emptyDot:"rgba(0,0,0,0.07)",
+    inputBg:"#F2F2F7", statBg:"#F2F2F7",
+    todoTag:"rgba(0,0,0,0.06)", todoTagTxt:"rgba(0,0,0,0.38)",
+    calHover:"rgba(0,0,0,0.04)",
   },
 };
 
-/* ── 유틸 ── */
 function useStorage(key, init) {
   const [val, setVal] = useState(() => {
     try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : init; } catch { return init; }
@@ -102,30 +83,26 @@ const todayKey = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 };
-
 const shiftDate = (str, n) => {
   const d = new Date(str + "T00:00:00");
   d.setDate(d.getDate() + n);
   return d.toISOString().slice(0,10);
 };
-
 const fmtDate = (str) => {
   const d = new Date(str + "T00:00:00");
   return `${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()} (${DAYS_KO[d.getDay()]})`;
 };
-
 const fmtShort = (str) => {
   const d = new Date(str + "T00:00:00");
   return `${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS_KO[d.getDay()]})`;
 };
 
-/* ── 메인 컴포넌트 ── */
 function App() {
   const [isDark, setIsDark]       = useStorage("dr-dark", true);
   const [habits, setHabits]       = useStorage("dr-habits", DEFAULT_HABITS);
-  const [checks, setChecks]       = useStorage("dr-checks", {});   // { "YYYY-MM-DD": [id,...] }
-  const [todos, setTodos]         = useStorage("dr-todos", DEFAULT_TODOS); // { morning:[...], ... }
-  const [todoDone, setTodoDone]   = useStorage("dr-tdone", {});    // { "YYYY-MM-DD-block-idx": bool }
+  const [checks, setChecks]       = useStorage("dr-checks", {});
+  const [todos, setTodos]         = useStorage("dr-todos", DEFAULT_TODOS);
+  const [todoDone, setTodoDone]   = useStorage("dr-tdone", {});
   const [tab, setTab]             = useState("today");
   const [viewDate, setViewDate]   = useState(todayKey());
   const [calDay, setCalDay]       = useState(() => new Date().getDate());
@@ -135,11 +112,11 @@ function App() {
   const [editHabit, setEditHabit] = useState(null);
   const [newHabit, setNewHabit]   = useState({ name:"", sticker:"⭐", color:"#FFB800", block:"morning" });
   const inputRef = useRef(null);
+  const fileRef  = useRef(null);
 
   const T = isDark ? THEME.dark : THEME.light;
   const TODAY = todayKey();
 
-  /* 체크 토글 */
   const toggleHabit = id => {
     const cur = checks[viewDate] || [];
     setChecks({ ...checks, [viewDate]: cur.includes(id) ? cur.filter(x=>x!==id) : [...cur, id] });
@@ -148,20 +125,16 @@ function App() {
     const k = `${viewDate}-${block}-${idx}`;
     setTodoDone({ ...todoDone, [k]: !todoDone[k] });
   };
-
   const addTodo = block => {
     if (!newTxt.trim()) { setAddingIn(null); return; }
     setTodos({ ...todos, [block]: [...(todos[block]||[]), newTxt.trim()] });
     setNewTxt(""); setAddingIn(null);
   };
-
   const removeTodo = (block, idx) => {
     const arr = [...(todos[block]||[])];
     arr.splice(idx,1);
     setTodos({ ...todos, [block]: arr });
   };
-
-  /* 날짜 클릭 → 달력 이동 */
   const goCalendar = () => {
     const d = new Date(viewDate + "T00:00:00");
     setCalMonth({ y: d.getFullYear(), m: d.getMonth() });
@@ -169,23 +142,49 @@ function App() {
     setTab("calendar");
   };
 
-  /* 달력 */
+  /* ── 백업 / 복원 ── */
+  const exportData = () => {
+    const data = { habits, checks, todos, todoDone, isDark };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dailyroutine-${todayKey()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const importData = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (d.habits)             setHabits(d.habits);
+        if (d.checks)             setChecks(d.checks);
+        if (d.todos)              setTodos(d.todos);
+        if (d.todoDone)           setTodoDone(d.todoDone);
+        if (d.isDark !== undefined) setIsDark(d.isDark);
+        alert("✅ 복원 완료!");
+      } catch { alert("❌ 파일 오류! 올바른 백업 파일인지 확인해주세요."); }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   const daysInMonth = (y,m) => new Date(y, m+1, 0).getDate();
   const firstDow    = (y,m) => new Date(y, m, 1).getDay();
   const calDateStr  = (d) => `${calMonth.y}-${String(calMonth.m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  const calChecks   = (d) => checks[calDateStr(d)] || [];
 
-  /* 스타일 헬퍼 */
   const card = { background: T.cardBg, border:`1px solid ${T.border}`, borderRadius:14, transition:"background 0.3s" };
 
   useEffect(() => { document.body.style.background = T.appBg; }, [T.appBg]);
   useEffect(() => { if (addingIn && inputRef.current) inputRef.current.focus(); }, [addingIn]);
 
-  /* ────────────────── RENDER ────────────────── */
   return (
     <div style={{ minHeight:"100vh", background:T.appBg, color:T.text, maxWidth:420, margin:"0 auto", paddingBottom:80, transition:"background 0.3s, color 0.3s" }}>
 
-      {/* ── 헤더 ── */}
+      {/* 헤더 */}
       <div style={{ background:T.headerBg, padding:"22px 18px 0", borderBottom:`1px solid ${T.border}`, position:"sticky", top:0, zIndex:20, transition:"background 0.3s" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14 }}>
           <div>
@@ -209,11 +208,9 @@ function App() {
         </div>
       </div>
 
-      {/* ══════════ 오늘 탭 ══════════ */}
+      {/* 오늘 탭 */}
       {tab==="today" && (
         <div style={{ padding:"14px 16px" }}>
-
-          {/* 날짜 바 */}
           <div style={{ ...card, display:"flex", justifyContent:"space-between", alignItems:"center", padding:"11px 16px", marginBottom:14 }}>
             <button onClick={()=>setViewDate(shiftDate(viewDate,-1))} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 4px" }}>‹</button>
             <div style={{ textAlign:"center", cursor:"pointer" }} onClick={goCalendar}>
@@ -229,26 +226,22 @@ function App() {
             }
           </div>
 
-          {/* 블록 */}
           {BLOCKS.map(b => {
             const blockHabits = habits.filter(h=>h.block===b.id);
             const blockTodos  = todos[b.id] || [];
             const dayChecks   = checks[viewDate] || [];
             return (
               <div key={b.id} style={{ background:b.bg, border:`1px solid ${b.border}`, borderRadius:14, marginBottom:10, overflow:"hidden" }}>
-                {/* 블록 헤더 */}
                 <div style={{ display:"flex", alignItems:"center", gap:8, padding:"9px 14px" }}>
                   <div style={{ width:7, height:7, borderRadius:"50%", background:b.color, flexShrink:0 }}/>
                   <div style={{ fontSize:12, fontWeight:800, color:b.color }}>{b.label}</div>
                   <div style={{ fontSize:10, color:b.color, opacity:0.5, marginLeft:"auto" }}>{b.time}</div>
                 </div>
-
-                {/* 습관 rows */}
                 {blockHabits.map(h => {
                   const done = dayChecks.includes(h.id);
                   return (
                     <div key={h.id} onClick={()=>toggleHabit(h.id)} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px", borderTop:`1px solid ${T.rowLine}`, cursor:"pointer" }}>
-                      <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border: done?`2px solid ${h.color}`:`2px dashed ${h.color}55`, background: done?`${h.color}22`:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:h.color, transition:"all 0.2s" }}>
+                      <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border:done?`2px solid ${h.color}`:`2px dashed ${h.color}55`, background:done?`${h.color}22`:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:h.color, transition:"all 0.2s" }}>
                         {done && "✓"}
                       </div>
                       <div style={{ fontSize:12, flex:1, color:T.text, textDecoration:done?"line-through":"none", opacity:done?0.38:1, transition:"all 0.2s" }}>{h.name}</div>
@@ -256,14 +249,12 @@ function App() {
                     </div>
                   );
                 })}
-
-                {/* 할일 rows */}
                 {blockTodos.map((todo,i) => {
                   const k = `${viewDate}-${b.id}-${i}`;
                   const done = !!todoDone[k];
                   return (
                     <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px", borderTop:`1px solid ${T.rowLine}` }}>
-                      <div onClick={()=>toggleTodo(b.id,i)} style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border: done?"2px solid #888":"2px dashed rgba(128,128,128,0.35)", background: done?"rgba(128,128,128,0.15)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#888", cursor:"pointer", transition:"all 0.2s" }}>
+                      <div onClick={()=>toggleTodo(b.id,i)} style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border:done?"2px solid #888":"2px dashed rgba(128,128,128,0.35)", background:done?"rgba(128,128,128,0.15)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#888", cursor:"pointer", transition:"all 0.2s" }}>
                         {done && "✓"}
                       </div>
                       <div onClick={()=>toggleTodo(b.id,i)} style={{ fontSize:12, flex:1, color:T.text, textDecoration:done?"line-through":"none", opacity:done?0.38:1, cursor:"pointer", transition:"all 0.2s" }}>{todo}</div>
@@ -272,8 +263,6 @@ function App() {
                     </div>
                   );
                 })}
-
-                {/* 추가 */}
                 {addingIn===b.id ? (
                   <div style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px", borderTop:`1px solid ${T.rowLine}` }}>
                     <div style={{ width:22, height:22, borderRadius:"50%", border:"2px dashed rgba(128,128,128,0.3)", flexShrink:0 }}/>
@@ -296,23 +285,17 @@ function App() {
         </div>
       )}
 
-      {/* ══════════ 달력 탭 ══════════ */}
+      {/* 달력 탭 */}
       {tab==="calendar" && (
         <div style={{ padding:"14px 16px" }}>
-
-          {/* 월 네비 */}
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
             <button onClick={()=>setCalMonth(p=>{ const d=new Date(p.y,p.m-1,1); return {y:d.getFullYear(),m:d.getMonth()}; })} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 6px" }}>‹</button>
             <div style={{ fontSize:15, fontWeight:800, color:T.text }}>{calMonth.y}년 {calMonth.m+1}월</div>
             <button onClick={()=>setCalMonth(p=>{ const d=new Date(p.y,p.m+1,1); return {y:d.getFullYear(),m:d.getMonth()}; })} style={{ background:"none", border:"none", fontSize:20, color:T.textSub, cursor:"pointer", padding:"0 6px" }}>›</button>
           </div>
-
-          {/* 요일 */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", marginBottom:4 }}>
             {DAYS_KO.map(d => <div key={d} style={{ textAlign:"center", fontSize:10, fontWeight:700, color:T.textSub, padding:"3px 0" }}>{d}</div>)}
           </div>
-
-          {/* 날짜 */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:3 }}>
             {Array.from({length: firstDow(calMonth.y, calMonth.m)}, (_,i) => <div key={"e"+i}/>)}
             {Array.from({length: daysInMonth(calMonth.y, calMonth.m)}, (_,i) => {
@@ -320,7 +303,7 @@ function App() {
               const dStr = calDateStr(d);
               const dayChecks = checks[dStr] || [];
               const isToday = dStr === TODAY;
-              const isSel   = d === calDay && calMonth.y===new Date(calDateStr(calDay)).getFullYear();
+              const isSel   = d === calDay;
               return (
                 <div key={d} onClick={()=>setCalDay(d)} style={{
                   display:"flex", flexDirection:"column", alignItems:"center",
@@ -344,8 +327,6 @@ function App() {
               );
             })}
           </div>
-
-          {/* 선택된 날 상세 */}
           {(() => {
             const dStr = calDateStr(calDay);
             const dayChecks = checks[dStr] || [];
@@ -363,7 +344,7 @@ function App() {
                     const done = dayChecks.includes(h.id);
                     return (
                       <div key={h.id} style={{ display:"flex", alignItems:"center", gap:10 }}>
-                        <div style={{ width:18, height:18, borderRadius:"50%", border: done?`2px solid ${h.color}`:`2px dashed ${h.color}44`, background: done?`${h.color}22`:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:h.color, flexShrink:0 }}>
+                        <div style={{ width:18, height:18, borderRadius:"50%", border:done?`2px solid ${h.color}`:`2px dashed ${h.color}44`, background:done?`${h.color}22`:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:h.color, flexShrink:0 }}>
                           {done&&"✓"}
                         </div>
                         <div style={{ fontSize:12, flex:1, color:T.text, textDecoration:done?"line-through":"none", opacity:done?0.4:0.85 }}>{h.name}</div>
@@ -372,7 +353,6 @@ function App() {
                     );
                   })}
                 </div>
-                {/* 통계 */}
                 <div style={{ display:"flex", gap:8 }}>
                   {[
                     { val:`${dayChecks.length}/${habits.length}`, label:"습관 완료", c:"#FFB800" },
@@ -391,47 +371,34 @@ function App() {
         </div>
       )}
 
-      {/* ══════════ 편집 탭 ══════════ */}
+      {/* 편집 탭 */}
       {tab==="edit" && (
         <div style={{ padding:"14px 16px" }}>
           {editHabit ? (
-            /* 습관 편집 */
             <div>
               <button onClick={()=>setEditHabit(null)} style={{ background:"none", border:"none", color:T.textSub, fontSize:13, cursor:"pointer", marginBottom:14, padding:0, display:"flex", alignItems:"center", gap:4 }}>‹ 목록으로</button>
               <div style={{ ...card, padding:"18px 16px" }}>
                 <div style={{ fontSize:14, fontWeight:800, color:T.text, marginBottom:16 }}>습관 편집</div>
-
-                {/* 스티커 선택 */}
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
                   {STICKER_OPTIONS.map(s => (
                     <span key={s} onClick={()=>setEditHabit({...editHabit,sticker:s})} style={{ fontSize:22, cursor:"pointer", opacity:editHabit.sticker===s?1:0.3, transform:editHabit.sticker===s?"scale(1.3)":"scale(1)", transition:"all 0.15s" }}>{s}</span>
                   ))}
                 </div>
-
-                {/* 이름 */}
                 <input value={editHabit.name} onChange={e=>setEditHabit({...editHabit,name:e.target.value})}
                   style={{ width:"100%", background:T.inputBg, border:`1px solid ${T.border}`, borderRadius:10, padding:"10px 14px", color:T.text, fontSize:14, outline:"none", marginBottom:14 }}
                 />
-
-                {/* 색상 */}
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
                   {COLOR_OPTIONS.map(c => (
                     <div key={c} onClick={()=>setEditHabit({...editHabit,color:c})} style={{ width:28, height:28, borderRadius:"50%", background:`radial-gradient(circle at 35% 35%,${c},${c}88)`, cursor:"pointer", border:editHabit.color===c?"3px solid #888":"3px solid transparent", boxSizing:"border-box", boxShadow:editHabit.color===c?`0 0 12px ${c}`:"none", transition:"all 0.15s" }}/>
                   ))}
                 </div>
-
-                {/* 시간대 */}
                 <div style={{ fontSize:11, color:T.textSub, marginBottom:8 }}>시간대</div>
                 <div style={{ display:"flex", gap:8, marginBottom:20 }}>
                   {BLOCKS.map(b => (
                     <button key={b.id} onClick={()=>setEditHabit({...editHabit,block:b.id})} style={{ flex:1, padding:"8px 4px", border:`1.5px solid ${editHabit.block===b.id?b.color:T.border}`, borderRadius:10, background:editHabit.block===b.id?`${b.color}18`:"transparent", color:editHabit.block===b.id?b.color:T.textSub, fontSize:12, fontWeight:700, cursor:"pointer" }}>{b.label}</button>
                   ))}
                 </div>
-
-                <button onClick={()=>{
-                  setHabits(habits.map(h=>h.id===editHabit.id?editHabit:h));
-                  setEditHabit(null);
-                }} style={{ width:"100%", background:"linear-gradient(135deg,#FFB800,#FF6B35)", border:"none", color:"#fff", borderRadius:12, padding:13, fontSize:14, fontWeight:800, cursor:"pointer" }}>저장</button>
+                <button onClick={()=>{ setHabits(habits.map(h=>h.id===editHabit.id?editHabit:h)); setEditHabit(null); }} style={{ width:"100%", background:"linear-gradient(135deg,#FFB800,#FF6B35)", border:"none", color:"#fff", borderRadius:12, padding:13, fontSize:14, fontWeight:800, cursor:"pointer" }}>저장</button>
               </div>
             </div>
           ) : (
@@ -484,6 +451,24 @@ function App() {
                   추가하기 ✨
                 </button>
               </div>
+
+              {/* 백업 / 복원 */}
+              <div style={{ ...card, padding:"16px", marginTop:10 }}>
+                <div style={{ fontSize:12, color:T.textSub, fontWeight:700, marginBottom:12 }}>💾 데이터 백업</div>
+                <div style={{ display:"flex", gap:8 }}>
+                  <button onClick={exportData} style={{ flex:1, background:"linear-gradient(135deg,#4A9EFF,#4A9EFF99)", border:"none", color:"#fff", borderRadius:12, padding:12, fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                    📥 백업 저장
+                  </button>
+                  <label style={{ flex:1, background: isDark?"rgba(255,255,255,0.07)":T.inputBg, border:`1px solid ${T.border}`, color:T.text, borderRadius:12, padding:12, fontSize:13, fontWeight:700, cursor:"pointer", textAlign:"center", display:"block" }}>
+                    📤 백업 복원
+                    <input ref={fileRef} type="file" accept=".json" onChange={importData} style={{ display:"none" }} />
+                  </label>
+                </div>
+                <div style={{ fontSize:10, color:T.textSub, marginTop:8, textAlign:"center" }}>
+                  폰 교체 전 백업 저장 → 새 폰에서 복원
+                </div>
+              </div>
+
             </div>
           )}
         </div>
