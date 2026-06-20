@@ -10,18 +10,63 @@
 <meta name="apple-mobile-web-app-title" content="데일리루틴">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#FFB800">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     input, button, textarea { font-family: inherit; }
     ::-webkit-scrollbar { display:none; }
-    body { font-family: 'Apple SD Gothic Neo','Pretendard',sans-serif; }
+    body { font-family: 'Apple SD Gothic Neo','Pretendard',sans-serif; background:#0D1220; }
+    #boot-msg {
+      min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      color:rgba(255,255,255,0.6); font-size:13px; padding:24px; text-align:center; line-height:1.6;
+      gap:10px;
+    }
+    #boot-msg .spinner {
+      width:22px; height:22px; border-radius:50%;
+      border:2.5px solid rgba(255,184,0,0.25); border-top-color:#FFB800;
+      animation:spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    #boot-msg.err { color:#FF6B6B; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div id="boot-msg"><div class="spinner"></div><div>불러오는 중...</div></div>
+  </div>
+
+  <script>
+    // 라이브러리 로드 실패를 화면에 직접 표시 (흰 화면 방지용 안전장치)
+    window.__libErrors = [];
+    function markFail(name){
+      return function(){
+        window.__libErrors.push(name);
+        showBootError();
+      };
+    }
+    function showBootError(){
+      var el = document.getElementById('boot-msg');
+      if (!el) return;
+      el.classList.add('err');
+      el.innerHTML =
+        '<div style="font-size:22px;">⚠️</div>' +
+        '<div style="font-weight:700;">라이브러리 로드 실패</div>' +
+        '<div>' + window.__libErrors.join(', ') + ' 불러오기에 실패했어요.<br>index.html과 같은 위치에 lib 폴더가 있는지 확인해주세요.</div>';
+    }
+    window.addEventListener('error', function(e){
+      var el = document.getElementById('boot-msg');
+      if (!el) return; // 이미 React가 정상 렌더링된 이후라면 무시
+      el.classList.add('err');
+      el.innerHTML =
+        '<div style="font-size:22px;">⚠️</div>' +
+        '<div style="font-weight:700;">실행 중 오류 발생</div>' +
+        '<div style="max-width:320px; word-break:break-all;">' + (e.message || '알 수 없는 오류') + '</div>';
+    });
+  </script>
+
+  <script src="lib/react.production.min.js" onerror="markFail('React')()"></script>
+  <script src="lib/react-dom.production.min.js" onerror="markFail('ReactDOM')()"></script>
+  <script src="lib/babel.min.js" onerror="markFail('Babel')()"></script>
+
   <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
