@@ -28,11 +28,10 @@
   .content { padding:12px 16px; padding-bottom:100px; }
 
   .date-bar { background:var(--card); border-radius:12px; padding:11px 14px; display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-  .date-nav { color:var(--sub); font-size:18px; cursor:pointer; padding:4px 8px; user-select:none; }
-  .date-center { text-align:center; }
+  .date-nav { color:var(--sub); font-size:18px; cursor:pointer; padding:4px 10px; user-select:none; }
+  .date-center { text-align:center; cursor:pointer; }
   .date-title { font-size:15px; font-weight:700; }
   .date-count { font-size:11px; color:var(--sub); margin-top:2px; }
-  .today-btn { background:var(--yellow); color:#1a1a2e; border:none; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; }
 
   .section { background:var(--card); border-radius:14px; padding:12px; margin-bottom:8px; }
   .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
@@ -47,20 +46,19 @@
   .section-time.evening { color:var(--evening); }
   .section-empty { font-size:12px; color:var(--sub); padding:8px 0; text-align:center; }
 
-  .habit-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); user-select:none; }
+  .habit-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
   .habit-row:last-of-type { border-bottom:none; }
   .check-circle { width:24px; height:24px; border-radius:50%; border:2px dashed var(--border); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; transition:all 0.2s; }
-  .habit-name { flex:1; font-size:14px; transition:all 0.2s; }
+  .habit-name { flex:1; font-size:14px; }
   .habit-name.done-text { text-decoration:line-through; color:var(--sub); }
   .habit-badge { display:flex; align-items:center; gap:4px; background:var(--card2); padding:3px 9px; border-radius:20px; font-size:11px; flex-shrink:0; }
   .habit-badge.todo-badge { background:transparent; border:1px solid var(--border); }
 
   /* FAB */
   .fab { position:fixed; bottom:28px; right:50%; transform:translateX(50%); max-width:420px; width:100%; display:flex; justify-content:flex-end; padding-right:20px; pointer-events:none; z-index:400; }
-  .fab-btn { pointer-events:all; width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#f5a623,#ff6b9d); border:none; color:white; font-size:20px; cursor:pointer; box-shadow:0 4px 20px rgba(245,166,35,0.4); display:flex; align-items:center; justify-content:center; transition:transform 0.2s; font-family:-apple-system,sans-serif; line-height:1; }
+  .fab-btn { pointer-events:all; width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#f5a623,#ff6b9d); border:none; color:white; font-size:20px; cursor:pointer; box-shadow:0 4px 20px rgba(245,166,35,0.4); display:flex; align-items:center; justify-content:center; transition:transform 0.2s; }
   .fab-btn:active { transform:scale(0.93); }
 
-  /* FAB 메뉴 */
   .fab-menu { position:fixed; bottom:90px; right:50%; transform:translateX(50%); max-width:420px; width:100%; display:flex; flex-direction:column; align-items:flex-end; padding-right:20px; gap:8px; z-index:400; pointer-events:none; }
   .fab-menu.show { pointer-events:all; }
   .fab-menu-item { background:var(--card2); border:1px solid var(--border); color:var(--text); padding:10px 16px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; opacity:0; transform:translateY(10px); transition:all 0.2s; white-space:nowrap; display:flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
@@ -69,7 +67,6 @@
   .fab-menu.show .fab-menu-item:nth-child(2) { transition-delay:0.1s; }
   .fab-menu.show .fab-menu-item:nth-child(3) { transition-delay:0.15s; }
 
-  /* 오버레이 & 바텀시트 */
   .sheet-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:150; opacity:0; pointer-events:none; transition:opacity 0.25s; }
   .sheet-overlay.show { opacity:1; pointer-events:all; }
   .bottom-sheet { position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:420px; background:var(--card); border-radius:24px 24px 0 0; z-index:300; padding:20px 20px 40px; transition:transform 0.3s cubic-bezier(.32,1,.56,1); max-height:90vh; overflow-y:auto; }
@@ -77,14 +74,12 @@
   .sheet-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 18px; }
   .sheet-title { font-size:15px; font-weight:700; margin-bottom:16px; text-align:center; }
 
-  /* 타입 선택 */
   .type-select { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .type-btn { padding:16px; border-radius:14px; border:2px solid var(--border); background:var(--card2); cursor:pointer; text-align:center; transition:all 0.2s; }
+  .type-btn { padding:16px; border-radius:14px; border:2px solid var(--border); background:var(--card2); cursor:pointer; text-align:center; }
   .type-btn .type-icon { font-size:26px; display:block; margin-bottom:6px; }
   .type-btn .type-label { font-size:13px; font-weight:700; color:var(--text); }
   .type-btn .type-desc { font-size:11px; color:var(--sub); margin-top:3px; }
 
-  /* 입력 폼 */
   .form-section { display:none; }
   .form-row { margin-bottom:14px; }
   .form-label { font-size:11px; color:var(--sub); margin-bottom:6px; }
@@ -103,26 +98,27 @@
   .period-tab.evening.active { background:rgba(155,114,207,0.18); border-color:var(--evening); color:var(--evening); }
 
   .submit-btn { width:100%; background:linear-gradient(90deg,#f5a623,#ff6b9d); border:none; color:white; padding:13px; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-top:4px; }
-  .back-btn { background:none; border:none; color:var(--sub); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:14px; padding:0; }
+  .danger-btn { width:100%; background:transparent; border:1px solid #ff5555; color:#ff5555; padding:13px; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-top:10px; }
+  .back-btn { background:none; border:none; color:var(--sub); font-size:12px; cursor:pointer; margin-bottom:14px; padding:0; }
 
-  /* 습관 관리 목록 */
-  .manage-habit-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
-  .manage-habit-row:last-of-type { border-bottom:none; }
-  .manage-habit-icon { font-size:20px; width:30px; text-align:center; flex-shrink:0; }
-  .manage-habit-info { flex:1; }
-  .manage-habit-name { font-size:14px; font-weight:600; }
-  .manage-habit-sec { font-size:11px; color:var(--sub); margin-top:2px; }
-  .manage-habit-actions { display:flex; gap:6px; }
-  .manage-edit-btn { background:var(--card2); border:1px solid var(--border); color:var(--text); padding:4px 10px; border-radius:8px; font-size:11px; cursor:pointer; }
-  .manage-del-btn { background:none; border:none; color:#ff5555; font-size:16px; cursor:pointer; padding:0 4px; }
+  .manage-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .manage-row:last-of-type { border-bottom:none; }
+  .manage-icon { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+  .manage-info { flex:1; }
+  .manage-name { font-size:14px; font-weight:600; }
+  .manage-sec { font-size:11px; color:var(--sub); margin-top:2px; }
+  .manage-edit { background:var(--card2); border:1px solid var(--border); color:var(--text); padding:4px 10px; border-radius:8px; font-size:11px; cursor:pointer; }
+  .manage-del { background:none; border:none; color:#ff5555; font-size:18px; cursor:pointer; padding:0 4px; }
   .manage-empty { text-align:center; color:var(--sub); font-size:13px; padding:24px 0; }
 
-  /* 컨텍스트 메뉴 */
-  .context-menu { position:fixed; z-index:500; background:var(--card2); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.4); min-width:160px; }
-  .context-item { padding:12px 16px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); transition:background 0.15s; }
-  .context-item:last-of-type { border-bottom:none; }
-  .context-item:hover { background:rgba(255,255,255,0.06); }
-  .context-item.danger { color:#ff5555; }
+  /* 꾹 누르기 액션시트 */
+  .action-sheet { position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:420px; background:var(--card); border-radius:24px 24px 0 0; z-index:500; padding:20px 20px 40px; transition:transform 0.25s cubic-bezier(.32,1,.56,1); }
+  .action-sheet.show { transform:translateX(-50%) translateY(0); }
+  .action-sheet-title { font-size:13px; color:var(--sub); text-align:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+  .action-btn { width:100%; padding:14px; border-radius:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; margin-bottom:8px; }
+  .action-btn.edit { background:var(--card2); color:var(--text); }
+  .action-btn.delete { background:rgba(255,85,85,0.15); color:#ff5555; }
+  .action-btn.cancel { background:transparent; color:var(--sub); border:1px solid var(--border); margin-bottom:0; }
 
   /* 달력 */
   .cal-nav { display:flex; align-items:center; justify-content:space-between; padding:4px 4px 14px; }
@@ -173,15 +169,14 @@
   <div class="tab" onclick="switchTab('calendar')">달력</div>
 </div>
 
-<!-- 오늘 탭 -->
 <div class="content" id="tab-today">
   <div class="date-bar">
     <span class="date-nav" onclick="moveDay(-1)">‹</span>
-    <div class="date-center">
+    <div class="date-center" onclick="goToday()">
       <div class="date-title" id="todayTitle"></div>
       <div class="date-count" id="todayCount">0/0개 완료</div>
     </div>
-    <button class="today-btn" onclick="goToday()">오늘</button>
+    <span class="date-nav" onclick="moveDay(1)">›</span>
   </div>
   <div class="section" id="sec-morning">
     <div class="section-header">
@@ -203,7 +198,6 @@
   </div>
 </div>
 
-<!-- 달력 탭 -->
 <div class="content hidden" id="tab-calendar">
   <div class="cal-nav">
     <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
@@ -225,38 +219,36 @@
 <!-- FAB 메뉴 -->
 <div class="fab-menu" id="fabMenu">
   <div class="fab-menu-item" onclick="openManageSheet()">📋 습관 관리</div>
-  <div class="fab-menu-item" onclick="openAddSheet('todo')">✅ 할일 추가</div>
-  <div class="fab-menu-item" onclick="openAddSheet('habit')">⭐ 습관 추가</div>
+  <div class="fab-menu-item" onclick="openSheet('todo')">✅ 할일 추가</div>
+  <div class="fab-menu-item" onclick="openSheet('habit')">⭐ 습관 추가</div>
 </div>
 
-<!-- FAB -->
 <div class="fab" id="fabArea">
   <button class="fab-btn" id="fabBtn" onclick="toggleFabMenu()">＋</button>
 </div>
 
-<!-- 오버레이 -->
+<!-- 메인 오버레이 -->
 <div class="sheet-overlay" id="overlay" onclick="closeAll()"></div>
 
 <!-- 바텀시트 -->
 <div class="bottom-sheet" id="bottomSheet">
   <div class="sheet-handle"></div>
 
-  <!-- 습관 추가/수정 -->
   <div id="stepHabit" class="form-section">
     <button class="back-btn" onclick="closeSheet()">← 닫기</button>
     <div class="sheet-title" id="habitSheetTitle">습관 추가</div>
     <div class="form-row">
       <div class="form-label">아이콘</div>
       <div class="emoji-grid" id="emojiGrid">
-        <div class="emoji-item selected" onclick="selectEmoji(this)">⭐</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">🔥</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">💎</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">🌟</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">🍀</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">🎯</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">📚</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">💪</div>
-        <div class="emoji-item" onclick="selectEmoji(this)">🏆</div>
+        <div class="emoji-item selected" onclick="selEmoji(this)">⭐</div>
+        <div class="emoji-item" onclick="selEmoji(this)">🔥</div>
+        <div class="emoji-item" onclick="selEmoji(this)">💎</div>
+        <div class="emoji-item" onclick="selEmoji(this)">🌟</div>
+        <div class="emoji-item" onclick="selEmoji(this)">🍀</div>
+        <div class="emoji-item" onclick="selEmoji(this)">🎯</div>
+        <div class="emoji-item" onclick="selEmoji(this)">📚</div>
+        <div class="emoji-item" onclick="selEmoji(this)">💪</div>
+        <div class="emoji-item" onclick="selEmoji(this)">🏆</div>
       </div>
     </div>
     <div class="form-row">
@@ -266,15 +258,14 @@
     <div class="form-row">
       <div class="form-label">시간대</div>
       <div class="period-tabs" id="habitPeriodTabs">
-        <div class="period-tab morning active" onclick="selectPeriod(this,'morning','habitPeriodTabs')">오전</div>
-        <div class="period-tab afternoon" onclick="selectPeriod(this,'afternoon','habitPeriodTabs')">오후</div>
-        <div class="period-tab evening" onclick="selectPeriod(this,'evening','habitPeriodTabs')">저녁</div>
+        <div class="period-tab morning active" onclick="selPeriod(this,'morning','habitPeriodTabs')">오전</div>
+        <div class="period-tab afternoon" onclick="selPeriod(this,'afternoon','habitPeriodTabs')">오후</div>
+        <div class="period-tab evening" onclick="selPeriod(this,'evening','habitPeriodTabs')">저녁</div>
       </div>
     </div>
     <button class="submit-btn" id="habitSubmitBtn" onclick="submitHabit()">추가하기 ✨</button>
   </div>
 
-  <!-- 할일 추가 -->
   <div id="stepTodo" class="form-section">
     <button class="back-btn" onclick="closeSheet()">← 닫기</button>
     <div class="sheet-title">할일 추가 <span style="font-size:11px;color:var(--sub);font-weight:400">(오늘만)</span></div>
@@ -285,26 +276,28 @@
     <div class="form-row">
       <div class="form-label">시간대</div>
       <div class="period-tabs" id="todoPeriodTabs">
-        <div class="period-tab morning active" onclick="selectPeriod(this,'morning','todoPeriodTabs')">오전</div>
-        <div class="period-tab afternoon" onclick="selectPeriod(this,'afternoon','todoPeriodTabs')">오후</div>
-        <div class="period-tab evening" onclick="selectPeriod(this,'evening','todoPeriodTabs')">저녁</div>
+        <div class="period-tab morning active" onclick="selPeriod(this,'morning','todoPeriodTabs')">오전</div>
+        <div class="period-tab afternoon" onclick="selPeriod(this,'afternoon','todoPeriodTabs')">오후</div>
+        <div class="period-tab evening" onclick="selPeriod(this,'evening','todoPeriodTabs')">저녁</div>
       </div>
     </div>
     <button class="submit-btn" onclick="submitTodo()">추가하기 ✨</button>
   </div>
 
-  <!-- 습관 관리 -->
   <div id="stepManage" class="form-section">
     <div class="sheet-title">습관 관리</div>
     <div id="manageList"></div>
-    <button class="submit-btn" style="margin-top:14px;background:var(--card2);color:var(--text);border:1px solid var(--border);" onclick="closeSheet()">닫기</button>
+    <button class="submit-btn" style="background:var(--card2);color:var(--text);border:1px solid var(--border);margin-top:14px" onclick="closeSheet()">닫기</button>
   </div>
 </div>
 
-<!-- 꾹 누르기 메뉴 (할일용) -->
-<div class="context-menu hidden" id="contextMenu" onclick="event.stopPropagation()">
-  <div class="context-item" onclick="contextEdit(); event.stopPropagation()">✏️ 이름 수정</div>
-  <div class="context-item danger" onclick="contextDelete(); event.stopPropagation()">🗑 삭제</div>
+<!-- 꾹 누르기 액션시트 (할일 수정/삭제) -->
+<div class="sheet-overlay" id="actionOverlay" onclick="closeActionSheet()" style="z-index:480"></div>
+<div class="action-sheet" id="actionSheet">
+  <div class="action-sheet-title" id="actionSheetTitle"></div>
+  <button class="action-btn edit" onclick="doTodoEdit()">✏️ 이름 수정</button>
+  <button class="action-btn delete" onclick="doTodoDelete()">🗑 삭제</button>
+  <button class="action-btn cancel" onclick="closeActionSheet()">취소</button>
 </div>
 
 <div id="toast"></div>
@@ -313,13 +306,12 @@
   const KEY_HABITS = 'dr_habits';
   const KEY_DAILY  = 'dr_daily';
 
-  let editingHabitIdx = -1; // 수정 중인 습관 인덱스 (-1이면 신규)
-  let editingTodoRow  = null;
-  let pressTimer      = null;
+  let editingHabitIdx = -1;
   let selectedEmoji   = '⭐';
   let selectedSection = 'morning';
   let viewDate        = dateKey(new Date());
   let fabOpen         = false;
+  let actionTodoIdx   = -1;
 
   // ── 날짜 유틸 ────────────────────────────
   function dateKey(d) {
@@ -337,20 +329,19 @@
   }
 
   // ── 스토리지 ─────────────────────────────
-  function loadHabits() { try { return JSON.parse(localStorage.getItem(KEY_HABITS)) || []; } catch { return []; } }
+  function loadHabits() { try { return JSON.parse(localStorage.getItem(KEY_HABITS))||[]; } catch { return []; } }
   function saveHabits(h) { localStorage.setItem(KEY_HABITS, JSON.stringify(h)); }
-  function loadDaily()  { try { return JSON.parse(localStorage.getItem(KEY_DAILY))  || {}; } catch { return {}; } }
+  function loadDaily()  { try { return JSON.parse(localStorage.getItem(KEY_DAILY)) ||{}; } catch { return {}; } }
   function saveDaily(d) { localStorage.setItem(KEY_DAILY, JSON.stringify(d)); }
-  function getDayData(k) { return loadDaily()[k] || { checks:{}, todos:[] }; }
-  function setDayData(k, v) { const d = loadDaily(); d[k] = v; saveDaily(d); }
+  function getDayData(k){ return loadDaily()[k] || { checks:{}, todos:[] }; }
+  function setDayData(k,v){ const d=loadDaily(); d[k]=v; saveDaily(d); }
 
   // ── 탭 전환 ──────────────────────────────
   function switchTab(name) {
     ['today','calendar'].forEach(n => document.getElementById('tab-'+n).classList.toggle('hidden', n!==name));
     document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['today','calendar'][i]===name));
     document.getElementById('fabArea').classList.toggle('hidden', name==='calendar');
-    document.getElementById('fabMenu').classList.remove('show');
-    fabOpen = false;
+    closeFabMenu();
     if (name==='calendar') renderCalendar();
   }
 
@@ -360,115 +351,75 @@
 
   // ── 오늘 탭 렌더링 ───────────────────────
   function renderToday() {
-    document.getElementById('todayTitle').textContent = formatDateTitle(viewDate);
+    const isToday = viewDate === dateKey(new Date());
+    const titleEl = document.getElementById('todayTitle');
+    titleEl.textContent = formatDateTitle(viewDate);
+    titleEl.style.color = isToday ? 'var(--yellow)' : 'var(--text)';
+
     const habits  = loadHabits();
     const dayData = getDayData(viewDate);
 
     ['morning','afternoon','evening'].forEach(sec => {
-      document.querySelectorAll(`#sec-${sec} .habit-row, #sec-${sec} .section-empty`).forEach(r => r.remove());
+      document.querySelectorAll(`#sec-${sec} .habit-row, #sec-${sec} .section-empty`).forEach(r=>r.remove());
     });
 
-    habits.forEach((h, idx) => createHabitRow(h.section, h.name, h.icon, idx, !!dayData.checks[idx]));
-    (dayData.todos || []).forEach((t, idx) => createTodoRow(t.section, t.name, t.checked, idx));
+    habits.forEach((h,i) => createHabitRow(h.section, h.name, h.icon, i, !!dayData.checks[i]));
+    (dayData.todos||[]).forEach((t,i) => createTodoRow(t.section, t.name, t.checked, i));
 
     ['morning','afternoon','evening'].forEach(sec => {
-      const el = document.getElementById('sec-' + sec);
+      const el = document.getElementById('sec-'+sec);
       if (!el.querySelectorAll('.habit-row').length) {
-        const e = document.createElement('div'); e.className='section-empty'; e.textContent='항목 없음'; el.appendChild(e);
+        const e=document.createElement('div'); e.className='section-empty'; e.textContent='항목 없음'; el.appendChild(e);
       }
     });
     updateCount();
   }
 
   function createHabitRow(sec, name, icon, idx, checked) {
-    const el = document.getElementById('sec-' + sec);
-    el.querySelectorAll('.section-empty').forEach(e => e.remove());
+    const el = document.getElementById('sec-'+sec);
+    el.querySelectorAll('.section-empty').forEach(e=>e.remove());
     const row = document.createElement('div');
     row.className = 'habit-row';
-    row.dataset.type = 'habit';
-    row.dataset.habitIdx = idx;
     row.innerHTML = `
-      <div class="check-circle" onclick="toggleHabitCheck(this,'${sec}',${idx})"></div>
+      <div class="check-circle" id="chk-h-${idx}-${sec}"></div>
       <span class="habit-name">${name}</span>
       <div class="habit-badge">${icon} 습관</div>`;
-    if (checked) applyCheck(row.querySelector('.check-circle'), sec, true);
+    const chk = row.querySelector('.check-circle');
+    chk.addEventListener('click', () => toggleHabitCheck(chk, sec, idx));
+    if (checked) applyCheck(chk, sec, true);
     el.appendChild(row);
   }
 
   function createTodoRow(sec, name, checked, idx) {
-    const el = document.getElementById('sec-' + sec);
-    el.querySelectorAll('.section-empty').forEach(e => e.remove());
+    const el = document.getElementById('sec-'+sec);
+    el.querySelectorAll('.section-empty').forEach(e=>e.remove());
     const row = document.createElement('div');
     row.className = 'habit-row';
-    row.dataset.type = 'todo';
-    row.dataset.todoIdx = idx;
     row.innerHTML = `
-      <div class="check-circle" onclick="toggleTodoCheck(this,'${sec}',${idx})"></div>
+      <div class="check-circle" id="chk-t-${idx}-${sec}"></div>
       <span class="habit-name">${name}</span>
       <div class="habit-badge todo-badge">할일</div>`;
-    if (checked) applyCheck(row.querySelector('.check-circle'), sec, true);
-    attachLongPress(row, () => showTodoMenu(idx));
+    const chk = row.querySelector('.check-circle');
+    chk.addEventListener('click', () => toggleTodoCheck(chk, sec, idx));
+    if (checked) applyCheck(chk, sec, true);
+
+    // 꾹 누르기 — 이름 영역에만
+    const nameEl = row.querySelector('.habit-name');
+    let pressTimer = null;
+    nameEl.addEventListener('touchstart', () => {
+      pressTimer = setTimeout(() => { openActionSheet(idx, name); }, 600);
+    }, { passive: true });
+    nameEl.addEventListener('touchend',   () => clearTimeout(pressTimer));
+    nameEl.addEventListener('touchmove',  () => clearTimeout(pressTimer), { passive: true });
+    nameEl.addEventListener('mousedown',  () => { pressTimer = setTimeout(() => { openActionSheet(idx, name); }, 600); });
+    nameEl.addEventListener('mouseup',    () => clearTimeout(pressTimer));
+    nameEl.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+
     el.appendChild(row);
   }
 
-  // ── 안정적인 꾹 누르기 ───────────────────
-  function attachLongPress(el, callback) {
-    let timer = null;
-    let moved = false;
-
-    function start(e) {
-      if (e.target.classList.contains('check-circle')) return;
-      moved = false;
-      timer = setTimeout(() => {
-        if (!moved) {
-          if (navigator.vibrate) navigator.vibrate(30);
-          callback();
-        }
-      }, 600);
-    }
-    function cancel() { clearTimeout(timer); }
-    function move() { moved = true; clearTimeout(timer); }
-
-    el.addEventListener('touchstart', start, { passive: true });
-    el.addEventListener('touchend', cancel);
-    el.addEventListener('touchmove', move, { passive: true });
-    el.addEventListener('mousedown', start);
-    el.addEventListener('mouseup', cancel);
-    el.addEventListener('mousemove', move);
-  }
-
-  function showTodoMenu(idx) {
-    const d = getDayData(viewDate);
-    const name = d.todos[idx]?.name || '';
-    // 간단한 액션시트
-    const action = confirm(`"${name}"\n\n확인 → 삭제\n취소 → 이름 수정`);
-    if (action) {
-      deleteTodo(idx);
-    } else {
-      editTodo(idx);
-    }
-  }
-
-  function editTodo(idx) {
-    const d = getDayData(viewDate);
-    const name = prompt('할일 이름 수정', d.todos[idx]?.name || '');
-    if (!name?.trim()) return;
-    d.todos[idx].name = name.trim();
-    setDayData(viewDate, d);
-    renderToday();
-    showToast('수정 완료 ✅');
-  }
-
-  function deleteTodo(idx) {
-    const d = getDayData(viewDate);
-    d.todos.splice(idx, 1);
-    setDayData(viewDate, d);
-    renderToday();
-    showToast('삭제됨 🗑');
-  }
-
   function applyCheck(el, sec, done) {
-    const c = { morning:'#f5a623', afternoon:'#4caf82', evening:'#9b72cf' }[sec];
+    const c = {morning:'#f5a623',afternoon:'#4caf82',evening:'#9b72cf'}[sec];
     const n = el.nextElementSibling;
     if (done) {
       el.dataset.done='1'; el.style.background=c; el.style.borderColor=c;
@@ -480,21 +431,19 @@
   }
 
   function toggleHabitCheck(el, sec, idx) {
-    clearTimeout(pressTimer);
-    const done = el.dataset.done === '1';
+    const done = el.dataset.done==='1';
     applyCheck(el, sec, !done);
     const d = getDayData(viewDate);
-    if (!done) d.checks[idx] = true; else delete d.checks[idx];
+    if (!done) d.checks[idx]=true; else delete d.checks[idx];
     setDayData(viewDate, d);
     updateCount();
   }
 
   function toggleTodoCheck(el, sec, idx) {
-    clearTimeout(pressTimer);
-    const done = el.dataset.done === '1';
+    const done = el.dataset.done==='1';
     applyCheck(el, sec, !done);
     const d = getDayData(viewDate);
-    if (d.todos[idx]) { d.todos[idx].checked = !done; setDayData(viewDate, d); }
+    if (d.todos[idx]) { d.todos[idx].checked=!done; setDayData(viewDate, d); }
     updateCount();
   }
 
@@ -504,61 +453,85 @@
     document.getElementById('todayCount').textContent = `${done}/${total}개 완료`;
   }
 
-  // ── FAB 메뉴 ─────────────────────────────
+  // ── 꾹 누르기 액션시트 ───────────────────
+  function openActionSheet(idx, name) {
+    actionTodoIdx = idx;
+    if (navigator.vibrate) navigator.vibrate(40);
+    document.getElementById('actionSheetTitle').textContent = `"${name}"`;
+    document.getElementById('actionOverlay').style.opacity='1';
+    document.getElementById('actionOverlay').style.pointerEvents='all';
+    document.getElementById('actionSheet').classList.add('show');
+  }
+
+  function closeActionSheet() {
+    document.getElementById('actionOverlay').style.opacity='0';
+    document.getElementById('actionOverlay').style.pointerEvents='none';
+    document.getElementById('actionSheet').classList.remove('show');
+    actionTodoIdx = -1;
+  }
+
+  function doTodoEdit() {
+    closeActionSheet();
+    const d = getDayData(viewDate);
+    const name = prompt('할일 이름 수정', d.todos[actionTodoIdx]?.name||'');
+    if (!name?.trim()) return;
+    d.todos[actionTodoIdx].name = name.trim();
+    setDayData(viewDate, d);
+    renderToday();
+    showToast('수정 완료 ✅');
+  }
+
+  function doTodoDelete() {
+    closeActionSheet();
+    const d = getDayData(viewDate);
+    d.todos.splice(actionTodoIdx, 1);
+    setDayData(viewDate, d);
+    renderToday();
+    showToast('삭제됨 🗑');
+  }
+
+  // ── FAB ──────────────────────────────────
   function toggleFabMenu() {
     fabOpen = !fabOpen;
     document.getElementById('fabMenu').classList.toggle('show', fabOpen);
     document.getElementById('fabBtn').textContent = fabOpen ? '✕' : '＋';
-    if (fabOpen) {
-      document.getElementById('overlay').classList.add('show');
-    } else {
-      document.getElementById('overlay').classList.remove('show');
-    }
+    document.getElementById('overlay').classList.toggle('show', fabOpen);
   }
-
-  function closeAll() {
-    const menu = document.getElementById('contextMenu');
-    if (!menu.classList.contains('hidden')) {
-      menu.classList.add('hidden');
-      return;
-    }
+  function closeFabMenu() {
     fabOpen = false;
     document.getElementById('fabMenu').classList.remove('show');
     document.getElementById('fabBtn').textContent = '＋';
+  }
+  function closeAll() {
+    closeFabMenu();
     closeSheet();
   }
 
   // ── 바텀시트 ─────────────────────────────
-  function openAddSheet(type) {
-    fabOpen = false;
-    document.getElementById('fabMenu').classList.remove('show');
-    document.getElementById('fabBtn').textContent = '＋';
+  function openSheet(type) {
+    closeFabMenu();
     editingHabitIdx = -1;
-
-    if (type === 'habit') {
+    if (type==='habit') {
       document.getElementById('habitSheetTitle').textContent = '습관 추가';
-      document.getElementById('habitSubmitBtn').textContent = '추가하기 ✨';
+      document.getElementById('habitSubmitBtn').textContent  = '추가하기 ✨';
       document.getElementById('habitName').value = '';
       selectedEmoji = '⭐';
-      document.querySelectorAll('.emoji-item').forEach((e,i) => e.classList.toggle('selected', i===0));
-      resetPeriodTabs('habitPeriodTabs', 'morning');
+      document.querySelectorAll('.emoji-item').forEach((e,i)=>e.classList.toggle('selected',i===0));
+      resetPeriodTabs('habitPeriodTabs','morning');
       showStep('stepHabit');
-      setTimeout(() => document.getElementById('habitName').focus(), 300);
+      setTimeout(()=>document.getElementById('habitName').focus(),300);
     } else {
-      document.getElementById('todoName').value = '';
-      resetPeriodTabs('todoPeriodTabs', 'morning');
+      document.getElementById('todoName').value='';
+      resetPeriodTabs('todoPeriodTabs','morning');
       showStep('stepTodo');
-      setTimeout(() => document.getElementById('todoName').focus(), 300);
+      setTimeout(()=>document.getElementById('todoName').focus(),300);
     }
-
     document.getElementById('overlay').classList.add('show');
     document.getElementById('bottomSheet').classList.add('show');
   }
 
   function openManageSheet() {
-    fabOpen = false;
-    document.getElementById('fabMenu').classList.remove('show');
-    document.getElementById('fabBtn').textContent = '＋';
+    closeFabMenu();
     renderManageList();
     showStep('stepManage');
     document.getElementById('overlay').classList.add('show');
@@ -566,55 +539,15 @@
   }
 
   function openEditHabitSheet(idx) {
-    const habits = loadHabits();
-    const h = habits[idx];
+    const h = loadHabits()[idx];
     editingHabitIdx = idx;
-
     document.getElementById('habitSheetTitle').textContent = '습관 수정';
-    document.getElementById('habitSubmitBtn').textContent = '수정하기 ✅';
+    document.getElementById('habitSubmitBtn').textContent  = '수정하기 ✅';
     document.getElementById('habitName').value = h.name;
-
     selectedEmoji = h.icon;
-    document.querySelectorAll('.emoji-item').forEach(e => {
-      e.classList.toggle('selected', e.textContent.trim() === h.icon);
-    });
-
-    resetPeriodTabs('habitPeriodTabs', h.section || 'morning');
+    document.querySelectorAll('.emoji-item').forEach(e=>e.classList.toggle('selected', e.textContent.trim()===h.icon));
+    resetPeriodTabs('habitPeriodTabs', h.section||'morning');
     showStep('stepHabit');
-    // 관리 시트에서 왔으므로 오버레이/시트는 이미 열려있음
-  }
-
-  function renderManageList() {
-    const habits = loadHabits();
-    const list = document.getElementById('manageList');
-    if (!habits.length) {
-      list.innerHTML = '<div class="manage-empty">등록된 습관이 없어요<br>＋ 버튼으로 추가해요</div>';
-      return;
-    }
-    const secLabel = { morning:'오전', afternoon:'오후', evening:'저녁' };
-    list.innerHTML = habits.map((h, i) => `
-      <div class="manage-habit-row">
-        <div class="manage-habit-icon">${h.icon}</div>
-        <div class="manage-habit-info">
-          <div class="manage-habit-name">${h.name}</div>
-          <div class="manage-habit-sec">${secLabel[h.section] || '오전'}</div>
-        </div>
-        <div class="manage-habit-actions">
-          <button class="manage-edit-btn" onclick="openEditHabitSheet(${i})">수정</button>
-          <button class="manage-del-btn" onclick="deleteHabit(${i})">×</button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function deleteHabit(idx) {
-    if (!confirm('이 습관을 삭제할까요?')) return;
-    const habits = loadHabits();
-    habits.splice(idx, 1);
-    saveHabits(habits);
-    renderManageList();
-    renderToday();
-    showToast('삭제됨 🗑');
   }
 
   function closeSheet() {
@@ -624,26 +557,26 @@
   }
 
   function showStep(id) {
-    ['stepHabit','stepTodo','stepManage'].forEach(s => {
+    ['stepHabit','stepTodo','stepManage'].forEach(s=>{
       document.getElementById(s).style.display = s===id ? 'block' : 'none';
     });
   }
 
-  function selectEmoji(el) {
-    document.querySelectorAll('.emoji-item').forEach(e => e.classList.remove('selected'));
+  function selEmoji(el) {
+    document.querySelectorAll('.emoji-item').forEach(e=>e.classList.remove('selected'));
     el.classList.add('selected');
     selectedEmoji = el.textContent.trim();
   }
 
-  function selectPeriod(el, sec, tabsId) {
-    document.getElementById(tabsId).querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  function selPeriod(el, sec, tabsId) {
+    document.getElementById(tabsId).querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));
     el.classList.add('active');
     selectedSection = sec;
   }
 
   function resetPeriodTabs(tabsId, sec) {
     selectedSection = sec;
-    document.getElementById(tabsId).querySelectorAll('.period-tab').forEach(t => {
+    document.getElementById(tabsId).querySelectorAll('.period-tab').forEach(t=>{
       t.classList.toggle('active', t.classList.contains(sec));
     });
   }
@@ -653,16 +586,15 @@
     const name = document.getElementById('habitName').value.trim();
     if (!name) { showToast('이름을 입력해주세요'); return; }
     const habits = loadHabits();
-
     if (editingHabitIdx >= 0) {
-      habits[editingHabitIdx] = { name, icon: selectedEmoji, section: selectedSection };
+      habits[editingHabitIdx] = { name, icon:selectedEmoji, section:selectedSection };
       saveHabits(habits);
       showToast('수정 완료 ✅');
       renderManageList();
-      showStep('stepManage'); // 관리 목록으로 돌아가기
+      showStep('stepManage');
       editingHabitIdx = -1;
     } else {
-      habits.push({ name, icon: selectedEmoji, section: selectedSection });
+      habits.push({ name, icon:selectedEmoji, section:selectedSection });
       saveHabits(habits);
       showToast('습관 추가 ✨');
       closeSheet();
@@ -675,86 +607,73 @@
     const name = document.getElementById('todoName').value.trim();
     if (!name) { showToast('내용을 입력해주세요'); return; }
     const d = getDayData(viewDate);
-    d.todos = d.todos || [];
-    d.todos.push({ name, section: selectedSection, checked: false });
+    d.todos = d.todos||[];
+    d.todos.push({ name, section:selectedSection, checked:false });
     setDayData(viewDate, d);
     showToast('할일 추가 ✅');
     closeSheet();
     renderToday();
   }
 
-  // ── 할일 꾹 누르기 메뉴 ──────────────────
-  function openTodoContextMenu(e, row) {
-    editingTodoRow = row;
-    const menu = document.getElementById('contextMenu');
-    menu.classList.remove('hidden');
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
-    menu.style.left = Math.min(x, window.innerWidth-175) + 'px';
-    menu.style.top  = Math.min(y, window.innerHeight-120) + 'px';
-    // 외부 클릭 시 닫기 (약간 딜레이로 현재 이벤트 무시)
-    setTimeout(() => {
-      document.addEventListener('click', function handler(ev) {
-        if (!menu.contains(ev.target)) {
-          menu.classList.add('hidden');
-          document.removeEventListener('click', handler);
-        }
-      });
-    }, 100);
+  // ── 습관 관리 목록 ───────────────────────
+  function renderManageList() {
+    const habits = loadHabits();
+    const secLabel = { morning:'오전', afternoon:'오후', evening:'저녁' };
+    const list = document.getElementById('manageList');
+    if (!habits.length) {
+      list.innerHTML='<div class="manage-empty">등록된 습관이 없어요</div>'; return;
+    }
+    list.innerHTML = habits.map((h,i)=>`
+      <div class="manage-row">
+        <div class="manage-icon">${h.icon}</div>
+        <div class="manage-info">
+          <div class="manage-name">${h.name}</div>
+          <div class="manage-sec">${secLabel[h.section]||'오전'}</div>
+        </div>
+        <button class="manage-edit" onclick="openEditHabitSheet(${i})">수정</button>
+        <button class="manage-del" onclick="deleteHabit(${i})">×</button>
+      </div>`).join('');
   }
-  function contextEdit() {
-    document.getElementById('contextMenu').classList.add('hidden');
-    if (!editingTodoRow) return;
-    const idx = parseInt(editingTodoRow.dataset.todoIdx);
-    const d = getDayData(viewDate);
-    const name = prompt('할일 이름 수정', d.todos[idx]?.name || '');
-    if (!name?.trim()) return;
-    d.todos[idx].name = name.trim();
-    setDayData(viewDate, d);
-    renderToday();
-    showToast('수정 완료 ✅');
-  }
-  function contextDelete() {
-    document.getElementById('contextMenu').classList.add('hidden');
-    if (!editingTodoRow) return;
-    const idx = parseInt(editingTodoRow.dataset.todoIdx);
-    const d = getDayData(viewDate);
-    d.todos.splice(idx, 1);
-    setDayData(viewDate, d);
+
+  function deleteHabit(idx) {
+    if (!confirm('이 습관을 삭제할까요?')) return;
+    const habits = loadHabits();
+    habits.splice(idx,1);
+    saveHabits(habits);
+    renderManageList();
     renderToday();
     showToast('삭제됨 🗑');
   }
 
   // ── 달력 ─────────────────────────────────
-  let calYear = new Date().getFullYear(), calMonth = new Date().getMonth()+1, selectedCalDay = new Date().getDate();
+  let calYear=new Date().getFullYear(), calMonth=new Date().getMonth()+1, selCalDay=new Date().getDate();
 
   function changeMonth(dir) {
-    calMonth += dir;
-    if (calMonth>12){calMonth=1;calYear++;} if(calMonth<1){calMonth=12;calYear--;}
-    selectedCalDay = null; renderCalendar();
+    calMonth+=dir;
+    if(calMonth>12){calMonth=1;calYear++;} if(calMonth<1){calMonth=12;calYear--;}
+    selCalDay=null; renderCalendar();
   }
 
   function renderCalendar() {
-    document.getElementById('calMonthTitle').textContent = `${calYear}년 ${calMonth}월`;
-    const grid = document.getElementById('calGrid');
-    grid.innerHTML = '';
-    ['일','월','화','수','목','금','토'].forEach(d => {
-      const el = document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el);
+    document.getElementById('calMonthTitle').textContent=`${calYear}년 ${calMonth}월`;
+    const grid=document.getElementById('calGrid');
+    grid.innerHTML='';
+    ['일','월','화','수','목','금','토'].forEach(d=>{
+      const el=document.createElement('div');el.className='cal-dow';el.textContent=d;grid.appendChild(el);
     });
-    const firstDay = new Date(calYear,calMonth-1,1).getDay();
-    const daysInMonth = new Date(calYear,calMonth,0).getDate();
-    const today = new Date();
-    const isCur = today.getFullYear()===calYear && today.getMonth()+1===calMonth;
-    const daily = loadDaily();
-
+    const firstDay=new Date(calYear,calMonth-1,1).getDay();
+    const daysInMonth=new Date(calYear,calMonth,0).getDate();
+    const today=new Date();
+    const isCur=today.getFullYear()===calYear&&today.getMonth()+1===calMonth;
+    const daily=loadDaily();
     for(let i=0;i<firstDay;i++){const e=document.createElement('div');e.className='cal-day empty';grid.appendChild(e);}
     for(let d=1;d<=daysInMonth;d++){
       const el=document.createElement('div');el.className='cal-day';
-      if(isCur&&d===today.getDate()) el.classList.add('today');
-      if(d===selectedCalDay) el.classList.add('selected');
+      if(isCur&&d===today.getDate())el.classList.add('today');
+      if(d===selCalDay)el.classList.add('selected');
       const num=document.createElement('span');num.textContent=d;el.appendChild(num);
       const key=`${calYear}-${String(calMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const dd = daily[key];
+      const dd=daily[key];
       const dots=document.createElement('div');dots.className='cal-dots';
       if(dd){
         if(Object.keys(dd.checks||{}).length){const dot=document.createElement('div');dot.className='cal-dot';dot.style.background='var(--yellow)';dots.appendChild(dot);}
@@ -763,44 +682,42 @@
         const dot=document.createElement('div');dot.className='cal-dot';dot.style.background='var(--border)';dots.appendChild(dot);
       }
       el.appendChild(dots);
-      el.onclick=()=>{selectedCalDay=d;renderCalendar();};
+      el.onclick=()=>{selCalDay=d;renderCalendar();};
       grid.appendChild(el);
     }
     renderCalDetail();
   }
 
   function renderCalDetail() {
-    const detail = document.getElementById('calDetail');
-    const today = new Date();
-    const d = selectedCalDay || today.getDate();
-    const key = `${calYear}-${String(calMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = today.getFullYear()===calYear && today.getMonth()+1===calMonth && today.getDate()===d;
-    const dow = ['일','월','화','수','목','금','토'][new Date(calYear,calMonth-1,d).getDay()];
-    const habits = loadHabits();
-    const dd = loadDaily()[key] || { checks:{}, todos:[] };
-    const checkedCount = Object.keys(dd.checks||{}).length;
-    const todoTotal = (dd.todos||[]).length;
-    const todoDone  = (dd.todos||[]).filter(t=>t.checked).length;
-    const total = habits.length + todoTotal;
-    const done  = checkedCount + todoDone;
-    const pct   = total > 0 ? Math.round(done/total*100) : 0;
-
-    detail.innerHTML = `
+    const detail=document.getElementById('calDetail');
+    const today=new Date();
+    const d=selCalDay||today.getDate();
+    const key=`${calYear}-${String(calMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=today.getFullYear()===calYear&&today.getMonth()+1===calMonth&&today.getDate()===d;
+    const dow=['일','월','화','수','목','금','토'][new Date(calYear,calMonth-1,d).getDay()];
+    const habits=loadHabits();
+    const dd=loadDaily()[key]||{checks:{},todos:[]};
+    const checkedCount=Object.keys(dd.checks||{}).length;
+    const todoTotal=(dd.todos||[]).length;
+    const todoDone=(dd.todos||[]).filter(t=>t.checked).length;
+    const total=habits.length+todoTotal;
+    const done=checkedCount+todoDone;
+    const pct=total>0?Math.round(done/total*100):0;
+    detail.innerHTML=`
       <div class="cal-detail-header">
         <span>📅</span>
         <span class="cal-detail-date">${calMonth}월 ${d}일 (${dow})</span>
         ${isToday?'<span class="cal-today-tag">오늘</span>':''}
       </div>
-      ${!habits.length ? '<div style="text-align:center;color:var(--sub);font-size:13px;padding:16px 0">등록된 습관이 없어요</div>' :
-        habits.map((h,i) => {
-          const checked = !!(dd.checks||{})[i];
+      ${!habits.length?'<div style="text-align:center;color:var(--sub);font-size:13px;padding:16px 0">등록된 습관이 없어요</div>':
+        habits.map((h,i)=>{
+          const checked=!!(dd.checks||{})[i];
           return `<div class="cal-habit-row">
             <div style="width:20px;height:20px;border-radius:50%;border:2px ${checked?'solid':'dashed'} ${checked?'var(--yellow)':'var(--border)'};background:${checked?'var(--yellow)':'transparent'};display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1a2e;flex-shrink:0">${checked?'✓':''}</div>
             <span class="cal-habit-name" style="${checked?'text-decoration:line-through;color:var(--sub)':''}">${h.name}</span>
             <span>${h.icon}</span>
           </div>`;
-        }).join('')
-      }
+        }).join('')}
       <div class="cal-stats">
         <div class="cal-stat"><div class="cal-stat-val" style="color:var(--yellow)">${checkedCount}/${habits.length}</div><div class="cal-stat-label">습관 완료</div></div>
         <div class="cal-stat"><div class="cal-stat-val" style="color:var(--blue)">${todoDone}/${todoTotal}</div><div class="cal-stat-label">할일 완료</div></div>
@@ -810,25 +727,21 @@
 
   // ── 백업 ─────────────────────────────────
   function backupSave() {
-    const data = { habits:loadHabits(), daily:loadDaily() };
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
-    a.download = `dailyroutine_${dateKey(new Date())}.json`;
-    a.click();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify({habits:loadHabits(),daily:loadDaily()})],{type:'application/json'}));
+    a.download=`dailyroutine_${dateKey(new Date())}.json`; a.click();
     showToast('백업 저장 완료 💾');
   }
   function backupRestore() {
-    const input = document.createElement('input');
-    input.type='file'; input.accept='.json';
-    input.onchange = e => {
-      const r = new FileReader();
-      r.onload = ev => {
+    const input=document.createElement('input'); input.type='file'; input.accept='.json';
+    input.onchange=e=>{
+      const r=new FileReader();
+      r.onload=ev=>{
         try {
-          const data = JSON.parse(ev.target.result);
-          if (data.habits) saveHabits(data.habits);
-          if (data.daily)  saveDaily(data.daily);
-          renderToday();
-          showToast('복원 완료 ✅');
+          const data=JSON.parse(ev.target.result);
+          if(data.habits)saveHabits(data.habits);
+          if(data.daily)saveDaily(data.daily);
+          renderToday(); showToast('복원 완료 ✅');
         } catch { showToast('파일 오류 ❌'); }
       };
       r.readAsText(e.target.files[0]);
@@ -836,11 +749,10 @@
     input.click();
   }
 
-  // ── 토스트 ───────────────────────────────
   function showToast(msg) {
-    const t = document.getElementById('toast');
+    const t=document.getElementById('toast');
     t.textContent=msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+    setTimeout(()=>t.classList.remove('show'),2000);
   }
 
   renderToday();
