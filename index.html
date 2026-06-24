@@ -471,20 +471,22 @@
   }
 
   function doTodoEdit() {
+    const idx = actionTodoIdx; // 먼저 저장
     closeActionSheet();
     const d = getDayData(viewDate);
-    const name = prompt('할일 이름 수정', d.todos[actionTodoIdx]?.name||'');
+    const name = prompt('할일 이름 수정', d.todos[idx]?.name||'');
     if (!name?.trim()) return;
-    d.todos[actionTodoIdx].name = name.trim();
+    d.todos[idx].name = name.trim();
     setDayData(viewDate, d);
     renderToday();
     showToast('수정 완료 ✅');
   }
 
   function doTodoDelete() {
+    const idx = actionTodoIdx; // 먼저 저장
     closeActionSheet();
     const d = getDayData(viewDate);
-    d.todos.splice(actionTodoIdx, 1);
+    d.todos.splice(idx, 1);
     setDayData(viewDate, d);
     renderToday();
     showToast('삭제됨 🗑');
